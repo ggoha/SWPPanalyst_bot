@@ -11,7 +11,7 @@ module Grapher
   end
 
   def generate_stoks_line(filter)
-    g = Gruff::Line.new
+    g = ::Gruff::Line.new
     g.title = 'Курс акций'
 
     g.hide_dots = true
@@ -32,7 +32,7 @@ module Grapher
   end
 
   def generate_moneys_area(filter)
-    g = Gruff::StackedArea.new
+    g = ::Gruff::StackedArea.new
     g.title = 'Потери компаний во время битв'
     g.theme = {
       :colors => %w(#c32d39 #25717e #fcc245 #8b2ced #18181c),
@@ -47,7 +47,7 @@ module Grapher
   end
 
   def generate_points_pie(filter)
-    g = Gruff::Pie.new
+    g = ::Gruff::Pie.new
     g.title = 'Очки компаний'
     Company.all.each do |company|
       if filter == :all
@@ -61,7 +61,7 @@ module Grapher
   end
 
   def generate_points_line(filter)
-    g = Gruff::Line.new
+    g = ::Gruff::Line.new
     g.title = 'Рейтинг компаний'
     g.hide_dots = true
     Company.all.each do |company|
@@ -72,7 +72,7 @@ module Grapher
   end
 
   def generate_points_bar(filter)
-    g = Gruff::StackedBar.new
+    g = ::Gruff::StackedBar.new
     g.title = 'Очки за битвы'
     Company.all.each do |company|
       battles = company.battles.public_send(filter)
@@ -82,7 +82,7 @@ module Grapher
   end
 
   def generate_percent_points_bar(filter)
-    g = Gruff::StackedBar.new
+    g = ::Gruff::StackedBar.new
     g.title = 'Процент очков за битвы'
     Company.all.each do |company|
       battles = company.battles.public_send(filter)

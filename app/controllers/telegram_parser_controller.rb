@@ -14,7 +14,11 @@ class TelegramParserController < Telegram::Bot::UpdatesController
 
   def channel_post(message)
     bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
-    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
+    if message['chat']['id']==-1001115710029
+      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
+    else
+      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: 'неправильный канал'
+    end
     #bot2send_picture
   end
 

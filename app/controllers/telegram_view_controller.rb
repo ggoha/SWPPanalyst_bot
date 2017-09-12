@@ -13,6 +13,8 @@ class TelegramViewController < Telegram::Bot::UpdatesController
 
   def start(*)
     respond_with :message, text: 'View'
+    save_context :type
+    type_keyboard
   end
 
   def help(*)
