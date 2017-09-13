@@ -7,7 +7,8 @@ class Battle < ApplicationRecord
 
   scope :week, -> { where(at: (Time.now - 1.week)..Time.now) }
   scope :day, -> { where(at: (Time.now - 1.day)..Time.now) }
-
+  default_scope { order(:at) }
+  
   def update_summary_score
     self.summary_score = company.score + score
     company.update_attributes(score: self.summary_score)
