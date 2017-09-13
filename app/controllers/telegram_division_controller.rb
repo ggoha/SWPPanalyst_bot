@@ -24,6 +24,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   private
 
   def summary_report
+    a = "dasa"
     result_str = ''
     battle = Company.our.battles.last
     result_str << "Обработано #{battle.reports.count} /battle\n" 

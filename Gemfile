@@ -28,6 +28,9 @@ gem 'turbolinks', '~> 5'
 
 gem 'telegram-bot', github: 'telegram-bot-rb/telegram-bot'
 #gem 'gruff'
+gem 'pronto'
+gem 'pronto-rubocop', require: false
+gem 'pronto-flay', require: false
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
