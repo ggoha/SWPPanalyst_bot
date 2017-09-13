@@ -1,7 +1,7 @@
 class Battle < ApplicationRecord
   belongs_to :company
+  has_many :reports
   before_save :update_summary_score
-  #after_save :add_reports if our?
 
   validates_uniqueness_of :name, :scope => :company_id
 
@@ -19,9 +19,5 @@ class Battle < ApplicationRecord
 
   def losses
     money.positive? ? 0 : -money
-  end
-
-  def our?
-    company.title == 'Pied Piper'
   end
 end

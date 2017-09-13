@@ -1,14 +1,14 @@
 module Parsed
   extend ActiveSupport::Concern
   NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }
-  COUNT = { 'никого' => 0, 'одного' => 1, 'двух' => 2, 'четырёх' => 4}
-  NAME_SMILE = { '📯Pied Piper' => 0, '🤖Hooli' => 1, '⚡️Stark Ind.'=> 2, '☂️Umbrella' => 3, '🎩Wayne Ent.' => 4 }
+  COUNT = { 'никого' => 0, 'одного' => 1, 'двух' => 2, 'четырёх' => 4 }
+  NAME_SMILE = { '📯Pied Piper' => 1, '🤖Hooli' => 2, '⚡️Stark Ind.'=> 3, '☂️Umbrella' => 4, '🎩Wayne Ent.' => 5 }
 
   def message_type(message)
     return :parse_battle unless message['text'].scan(/По итогам битвы/).empty?
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
-    #return :parse_report unless message['text'].include?('Твои результаты в битве')
+    return :parse_report if message['text'].include?('Твои результаты в битве')
     :parse_undefined
   end
 
@@ -68,24 +68,28 @@ module Parsed
   end
 
   def parse_report(message)
-      text = message['text']
-      result_str = ''
-
-      user = User.find_or_create(message)
-      name = name(message)
-      battle_id = user.company.battles.find_by_name(name).id
-      broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
-      kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Ты уронил аж) ([а-я]+)/)[0][1]]
-      money = text.scan(/Деньги: (.+)\n/)[0].delete('$').to_i
-      score = text.scan(/Твой вклад: (.+)\n/)[0].to_i
-      report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score)
-      results_str << report.inspect
+    text = message['text']
+    result_str = ''
+    binding.pry
+    user = User.find_or_create(message)
+    name = name2(message)
+    battle_id = user.company.battles.find_by_name(name)&.id
+    broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
+    kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Ты уронил аж) ([а-я]+)/)[0][1]]
+    money = text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i
+    score = text.scan(/Твой вклад: (.+)\n/)[0][0].to_i
+    report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score)
+    result_str << report.inspect
   end
 
   private
 
   def name(message)
     Time.at(message['date']).strftime('%Y-%m-%d-%H')
+  end
+
+  def name2(message)
+    Time.at(message['date']).strftime('%Y-%m-%d-')+message['text'].scan(/на (\d+) часов/)[0][0]
   end
 
   def to_int(s)
