@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170913121350) do
+ActiveRecord::Schema.define(version: 20170914183158) do
 
   create_table "battles", force: :cascade do |t|
     t.integer  "company_id"
@@ -26,6 +26,12 @@ ActiveRecord::Schema.define(version: 20170913121350) do
   create_table "companies", force: :cascade do |t|
     t.string  "title",             null: false
     t.integer "score", default: 0
+  end
+
+  create_table "divisions", force: :cascade do |t|
+    t.string  "title",       null: false
+    t.string  "telegram_id"
+    t.integer "company_id"
   end
 
   create_table "reports", force: :cascade do |t|
@@ -50,6 +56,7 @@ ActiveRecord::Schema.define(version: 20170913121350) do
     t.string  "telegram_id"
     t.integer "company_id"
     t.string  "username"
+    t.integer "division_id"
   end
 
 end

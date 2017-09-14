@@ -78,8 +78,6 @@ GEM
     ffi (1.9.14)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
-    gruff (0.7.0)
-      rmagick (~> 2.13, >= 2.13.4)
     hirb (0.7.3)
     httpclient (2.8.3)
     i18n (0.7.0)
@@ -150,7 +148,6 @@ GEM
     rb-fsevent (0.9.8)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
-    rmagick (2.16.0)
     rspec-core (3.5.4)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
@@ -222,7 +219,6 @@ DEPENDENCIES
   byebug
   coffee-rails (~> 4.2)
   debbie (~> 2.0.0)
-  gruff
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)

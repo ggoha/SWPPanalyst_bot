@@ -1,7 +1,7 @@
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include Parsed
-
+  before_action :set_division, only: [:summary]
   context_to_action!
 
   def start(*)
@@ -13,12 +13,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def message(message)
-    #bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
-    if message['chat']['id']==Rails.application.secrets['telegram']['division']
-      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
-    else
-      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: 'неправильный канал'
-    end
+    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
   end
 
   def summary
@@ -29,9 +24,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def summary_report
     result_str = ''
-    battle = Company.our.battles.last
-    result_str << "Обработано #{battle.reports.count} /battle\n" 
-    battle.reports.group_by(&:broked_company_id).each do |company_id, arr|
+    battle = @division.company.battles.last
+    reports = battle.reports.for_division(@division)
+    result_str << "Для #{@division.title} обработано #{reports.count} /battle\n"
+    reports.group_by(&:broked_company_id).each do |company_id, arr|
       company = Company.find(company_id)
       result_str << "На #{company.title} пошло #{arr.count} человек\n"
       sum_money = arr.pluck(:money).inject(0, :+)
@@ -41,9 +37,13 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
       sum_score = arr.pluck(:score).inject(0, :+)
       result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
     end
-    sum_score = battle.reports.pluck(:score).inject(0, :+)
-    mvp = battle.reports.order(score: :desc).first
-    result_str << "MVP - [#{mvp.user.game_name}](@#{mvp.user.username}) : #{mvp.score}\n"
+    sum_score = reports.pluck(:score).inject(0, :+)
+    mvp = reports.order(score: :desc).first
+    result_str << "MVP - #{mvp.user.game_name} : #{mvp.score}\n"
     result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n"
+  end
+
+  def set_division
+    @division = Division.find_by_telegram_id(update['message']['chat']['id'])
   end
 end

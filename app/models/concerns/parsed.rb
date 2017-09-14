@@ -1,10 +1,12 @@
 module Parsed
   extend ActiveSupport::Concern
+
   NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }
   COUNT = { 'никого' => 0, 'одного' => 1, 'двух' => 2, 'трёх' => 3, 'четырёх' => 4 }
   NAME_SMILE = { '📯Pied Piper' => 1, '🤖Hooli' => 2, '⚡️Stark Ind.'=> 3, '☂️Umbrella' => 4, '🎩Wayne Ent.' => 5 }
 
   def message_type(message)
+    return :parse_invite if message['new_chat_member'].present? && message['new_chat_member']['id']==Rails.application.secrets['telegram']['bots']['division']['id']
     return :parse_battle unless message['text'].scan(/По итогам битвы/).empty?
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
@@ -22,6 +24,13 @@ module Parsed
 
   def parse_totals(_message)
     'не поддерживается рейтинг компаний за день'
+  end
+
+  def parse_invite(message)
+    result_str = ''
+    division = Division.find_or_create(message)
+    result_str << division.inspect   
+    result_str
   end
 
   def parse_stock(message)
@@ -72,6 +81,7 @@ module Parsed
     result_str = ''
 
     user = User.find_or_create(message)
+    user.division.update_attributes(company_id: user.company_id) if user.division.company_id.blank?
     name = name2(message)
     battle_id = user.company.battles.find_by_name(name).id
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
