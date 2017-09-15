@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914183158) do
+ActiveRecord::Schema.define(version: 20170915172624) do
 
   create_table "battles", force: :cascade do |t|
     t.integer  "company_id"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20170914183158) do
     t.integer "money"
     t.integer "score"
     t.boolean "active"
+    t.float   "buff"
   end
 
   create_table "stocks", force: :cascade do |t|
@@ -57,6 +58,10 @@ ActiveRecord::Schema.define(version: 20170914183158) do
     t.integer "company_id"
     t.string  "username"
     t.integer "division_id"
+    t.integer "practice"
+    t.integer "theory"
+    t.integer "cunning"
+    t.integer "wisdom"
   end
 
 end

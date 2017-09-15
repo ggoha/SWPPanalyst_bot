@@ -11,6 +11,9 @@ module Parsed
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
     return :parse_report if message['text'].include?('Твои результаты в битве')
+    return :parse_profile if message['text'].include?('Навыки')
+    return :parse_bag if message['text'].include?('#SWОтделыБаг')
+    return :parse_feature if message['text'].include?('#SWОтделыИдея')
     :parse_undefined
   end
 
@@ -24,6 +27,14 @@ module Parsed
 
   def parse_totals(_message)
     'не поддерживается рейтинг компаний за день'
+  end
+
+  def parse_feature(message)
+    respond_with :message, text: t('.parse_feature.content')
+  end
+
+  def parse_bag(message)
+    respond_with :message, text: t('.parse_bag.content')
   end
 
   def parse_invite(message)
@@ -85,14 +96,36 @@ module Parsed
     name = name2(message)
     battle_id = user.company.battles.find_by_name(name).id
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
-    kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-я]+)/)[0][1]]
+    kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
     money = text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i
     score = text.scan(/Твой вклад: (.+)\n/)[0][0].to_i
-    report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score)
+    buff = buff(message, user)
+    report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
     result_str << report.inspect
   end
 
+  def parse_profile(message)
+    text = message['text']
+    result_str = ''
+
+    user = User.find_or_create(message)
+    practice = to_int(message['text'].scan(/(.+)🔨/)[0][0])
+    theory = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
+    cunning = to_int(message['text'].scan(/(.+)🐿/)[0][0])
+    wisdom = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
+    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom)
+    result_str << user.inspect
+  end
+
   private
+
+  def buff(message, user)
+    return nil unless message['text'].include?(🔨)
+    return nil unless (user.theory && user.practice)
+    current_practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
+    current_theory = to_int(message['text'].scan(/🎓(.+)🐿/)[0][0])
+    message['text'].include?('Ты защищал') ? (current_theory.to_f/user.theory-1)*100/0.8 : (current_practice.to_f/user.practice-1)*100/0.6
+  end
 
   def name(message)
     # TODO fix
@@ -100,7 +133,7 @@ module Parsed
   end
 
   def name2(message)
-    Time.at(message['date']).strftime('%Y-%m-%d-')+message['text'].scan(/на (\d+) часов/)[0][0]
+    Time.at(message['forward_date']).strftime('%Y-%m-%d-')+message['text'].scan(/на (\d+) часов/)[0][0]
   end
 
   def to_int(s)

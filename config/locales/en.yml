@@ -1,4 +1,21 @@
 en:
+  telegram_division:
+    help:
+      content: |
+        Возможности:
+        добавить бота в чат - создает отдел
+        скинуть репорт в чат с ботом - отдать боту на обработку
+        /hashtags - доступные хештеги
+        /summary - суммирует результаты отдела в воследний взлом
+    parse_bag:
+      content: Сообщение о баге принято
+    parse_feature:
+      content: Сообщение с идеей принято
+    hashtags:
+      content: |
+        Доступные хештеги для чатов с ботом
+        #SWОтделыИдея - для идей
+        #SWОтделыБаг - для всего что не работает. работает неправильно
   telegram_webhooks:
     action_missing:
       command: Can not perform %{command}

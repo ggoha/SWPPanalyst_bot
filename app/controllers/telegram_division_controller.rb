@@ -13,11 +13,17 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def message(message)
+    bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
     bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
   end
 
   def summary
+    bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
     respond_with :message, text: summary_report, parse_mode: 'Markdown'
+  end
+
+  def hashtags
+    respond_with :message, text: t('.content')
   end
 
   private
@@ -27,14 +33,16 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     battle = @division.company.battles.last
     reports = battle.reports.for_division(@division)
     result_str << "Для #{@division.title} обработано #{reports.count} /battle\n"
-    reports.group_by(&:broked_company_id).each do |company_id, arr|
-      company = Company.find(company_id)
-      result_str << "На #{company.title} пошло #{arr.count} человек\n"
-      sum_money = arr.pluck(:money).inject(0, :+)
-      result_str << "Они унесли #{sum_money}💵\n"
-      sum_kill = arr.pluck(:kill).inject(0, :+)
-      result_str << "Они вынесли *#{sum_kill}* врагов\n"
-      sum_score = arr.pluck(:score).inject(0, :+)
+    Company.each do |company|
+      arr = reports.where(broked_company_id: company.id)
+      next unless arr
+      result_str << "На #{company.title} пошло #{arr.count} человек"
+      comrads_percentage = reports.average(:buff)
+      result_str << " вместе с #{comrads_percentage.round(0)} %" if comrads_percentage
+      sum_money = arr.sum(:money)
+      result_str << "\тОни унесли #{arr.sum(:money)}💵\n"
+      result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n"
+      sum_score = arr.sum(:score)
       result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
     end
     sum_score = reports.pluck(:score).inject(0, :+)
