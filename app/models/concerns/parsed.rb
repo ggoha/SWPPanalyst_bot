@@ -120,7 +120,7 @@ module Parsed
   private
 
   def buff(message, user)
-    return nil unless message['text'].include?(🔨)
+    return nil unless message['text'].include?('🔨')
     return nil unless (user.theory && user.practice)
     current_practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     current_theory = to_int(message['text'].scan(/🎓(.+)🐿/)[0][0])

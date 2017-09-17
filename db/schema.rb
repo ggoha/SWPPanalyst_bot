@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915172624) do
+ActiveRecord::Schema.define(version: 20170917193606) do
 
   create_table "battles", force: :cascade do |t|
     t.integer  "company_id"
@@ -24,14 +24,16 @@ ActiveRecord::Schema.define(version: 20170915172624) do
   end
 
   create_table "companies", force: :cascade do |t|
-    t.string  "title",             null: false
-    t.integer "score", default: 0
+    t.string  "title",               null: false
+    t.integer "score",   default: 0
+    t.integer "sadness"
   end
 
   create_table "divisions", force: :cascade do |t|
-    t.string  "title",       null: false
+    t.string  "title",                       null: false
     t.string  "telegram_id"
     t.integer "company_id"
+    t.boolean "autopin",     default: false
   end
 
   create_table "reports", force: :cascade do |t|
@@ -53,7 +55,7 @@ ActiveRecord::Schema.define(version: 20170915172624) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string  "game_name",   null: false
+    t.string  "game_name",               null: false
     t.string  "telegram_id"
     t.integer "company_id"
     t.string  "username"
@@ -62,6 +64,7 @@ ActiveRecord::Schema.define(version: 20170915172624) do
     t.integer "theory"
     t.integer "cunning"
     t.integer "wisdom"
+    t.integer "rage",        default: 0
   end
 
 end
