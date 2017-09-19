@@ -153,7 +153,7 @@ module Parsed
   end
 
   def name3(message)
-    (Time.at(message['forward_date'])-1.day).strftime('%Y-%m-%d-')+message['text'].scan(/<D0><BD><D0><B0> (\d+) <D1><87><D0><B0><D1><81><D0><BE><D0><B2>/)[0][0]
+    (Time.at(message['forward_date'])-1.day).strftime('%Y-%m-%d-')+message['text'].scan(/на (\d+) часов/)[0][0]
   end
 
   def to_int(s)

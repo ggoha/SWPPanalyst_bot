@@ -1,7 +1,7 @@
 module Showing
   extend ActiveSupport::Concern
   def stars(user)
-    '⭐️'*user.stars
+    user.stars ? '⭐️'*user.stars : ''
   end
 
   def user(user)
