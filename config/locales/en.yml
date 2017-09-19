@@ -26,7 +26,14 @@ en:
       alert: This is ALERT-T-T!!!
       no_alert: Simple answer
     help:
-      content: По всем вопросам обращаться @ggoha_ggoha
+      content:
+        /memo %text% - Saves text to session.
+        /remind_me - Replies with text from session.
+        /keyboard - Simple keyboard.
+        /inline_keyboard - Inline keyboard example.
+        Bot supports inline queries. Enable it in @BotFather.
+        /last_chosen_inline_result - Your last chosen inline result \
+        (Enable feedback with /setinlinefeedback).
     inline_keyboard:
       alert: Answer with alert
       no_alert: Without alert

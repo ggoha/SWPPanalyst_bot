@@ -1,5 +1,8 @@
 class TelegramWebhooksController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
+  include Showing
+  before_action :set_user, only: [:me]
+  
   context_to_action!
 
   def start(*)
@@ -24,6 +27,10 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     to_remind = session.delete(:memo)
     reply = to_remind || t('.nothing')
     respond_with :message, text: reply
+  end
+
+  def me
+    respond_with :message, text: user(@user)
   end
 
   def keyboard(value = nil, *)
@@ -103,5 +110,9 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     else
       respond_with :message, text: t('telegram_webhooks.action_missing.feature', action: action)
     end
+  end
+
+  def set_user
+    @user = User.find_by_telegram_id(update['message']['from']['id'])
   end
 end

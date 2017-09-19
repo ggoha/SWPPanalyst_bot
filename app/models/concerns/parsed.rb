@@ -11,7 +11,8 @@ module Parsed
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
     return :parse_report if message['text'].include?('Твои результаты в битве')
-    return :parse_profile if message['text'].include?('Навыки')
+    return :parse_full_profile if message['text'].include?('Навыки')
+    return :parse_compact_profile if message['text'].include?('Битва через')
     return :parse_bag if message['text'].include?('#SWОтделыБаг')
     return :parse_feature if message['text'].include?('#SWОтделыИдея')
     :parse_undefined
@@ -104,16 +105,30 @@ module Parsed
     result_str << report.inspect
   end
 
-  def parse_profile(message)
+  def parse_compact_profile(message)
     text = message['text']
     result_str = ''
 
     user = User.find_or_create(message)
-    practice = to_int(message['text'].scan(/(.+)🔨/)[0][0])
-    theory = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
-    cunning = to_int(message['text'].scan(/(.+)🐿/)[0][0])
-    wisdom = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
-    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom)
+    practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
+    theory = to_int(message['text'].scan(/🎓(.+)/)[0][0])
+    cunning = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
+    wisdom = to_int(message['text'].scan(/🐢(.+)/)[0][0])
+    star = message['text'].scan(/(.+)\/cool/)[0][0].length
+    level = message['text'].scan(/🎚(/d+) \(/)[0][0]
+    endurance = message['text'].scan(/🔋(\d+)%/)
+    experience = to_int(message['text'].scan(/\((\d+) из/)[0][0])
+    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, star: star, level: level, endurance: endurance, experience: experience)
+    result_str << user.inspect
+  end
+
+  def parse_endurance(message)
+    text = message['text']
+    result_str = ''
+
+    user = User.find_or_create(message)
+    endurance = message['text'].scan(/🔋Выносливость: (\d+)%/)[0][0]
+    user.update_attributes(endurance: endurance)
     result_str << user.inspect
   end
 

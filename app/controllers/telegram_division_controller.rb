@@ -1,7 +1,11 @@
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include Parsed
+  include Showing
+
   before_action :set_division, only: [:summary]
+  before_action :set_user, only: [:me]
+
   context_to_action!
 
   def start(*)
@@ -24,6 +28,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def hashtags
     respond_with :message, text: t('.content')
+  end
+
+  def me
+    respond_with :message, text: user(@user)
   end
 
   private
@@ -53,5 +61,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])
+  end
+
+  def set_user
+    @user = User.find_by_telegram_id(update['message']['from']['id'])
   end
 end

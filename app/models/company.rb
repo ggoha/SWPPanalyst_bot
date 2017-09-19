@@ -5,6 +5,6 @@ class Company < ApplicationRecord
   has_many :divisions
 
   def self.our
-    Company.find_by_title('Pied Piper')
+    Company.find_by_title('📯Pied Piper')
   end
 end

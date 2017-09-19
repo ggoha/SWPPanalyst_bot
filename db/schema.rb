@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20170917193606) do
   create_table "companies", force: :cascade do |t|
     t.string  "title",               null: false
     t.integer "score",   default: 0
-    t.integer "sadness"
+    t.integer "sadness", default: 0
   end
 
   create_table "divisions", force: :cascade do |t|
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20170917193606) do
     t.integer "money"
     t.integer "score"
     t.boolean "active"
+    t.float   "comrades_percentage"
     t.float   "buff"
   end
 

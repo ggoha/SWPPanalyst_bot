@@ -34,9 +34,9 @@ class TelegramAdminController < Telegram::Bot::UpdatesController
         next if arr.empty?
         result_str << "На #{company.title} пошло #{arr.count} человек"
         comrads_percentage = arr.average(:buff)
-        result_str << " вместе с #{comrads_percentage.round(0)}%. " if comrads_percentage
+        result_str << " вместе с #{comrads_percentage.round(0)}%." if comrads_percentage
         sum_score = arr.sum(:score)
-        result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n"
+        result_str << " Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n"
       end
       sum_score = reports.pluck(:score).inject(0, :+)
       result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
