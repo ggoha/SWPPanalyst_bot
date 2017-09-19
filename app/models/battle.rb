@@ -16,7 +16,7 @@ class Battle < ApplicationRecord
   end
 
   def update_sadness
-    company.update_attributes(sadness: result ? min(company.sadness+1, 5) : 0)
+    company.update_attributes(sadness: result ? 0 : [company.sadness+1, 5].min)
   end
 
   def add_reports

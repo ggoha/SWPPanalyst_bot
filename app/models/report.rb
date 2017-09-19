@@ -7,6 +7,6 @@ class Report < ApplicationRecord
   after_save :update_sadness
 
   def update_sadness
-    user.update_attributes(rage: score==1 ? min(user.rage+1, 10) : 0)
+    user.update_attributes(rage: (score==0 or score==nil) ? [user.rage+1, 10].min : 0)
   end
 end

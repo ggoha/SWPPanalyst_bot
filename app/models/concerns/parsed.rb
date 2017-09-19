@@ -95,7 +95,8 @@ module Parsed
     user = User.find_or_create(message)
     user.division.update_attributes(company_id: user.company_id) if user.division.company_id.blank?
     name = name2(message)
-    battle_id = user.company.battles.find_by_name(name).id
+    name2 = name3(message)
+    battle_id = (user.company.battles.find_by_name(name) || user.company.battles.find_by_name(name2) ).id
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
     kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
     money = text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i
@@ -108,17 +109,17 @@ module Parsed
   def parse_compact_profile(message)
     text = message['text']
     result_str = ''
-
+    
     user = User.find_or_create(message)
     practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     theory = to_int(message['text'].scan(/🎓(.+)/)[0][0])
     cunning = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
     wisdom = to_int(message['text'].scan(/🐢(.+)/)[0][0])
-    star = message['text'].scan(/(.+)\/cool/)[0][0].length
-    level = message['text'].scan(/🎚(/d+) \(/)[0][0]
-    endurance = message['text'].scan(/🔋(\d+)%/)
-    experience = to_int(message['text'].scan(/\((\d+) из/)[0][0])
-    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, star: star, level: level, endurance: endurance, experience: experience)
+    stars = (message['text'].scan(/(.+)\/cool/)[0][0].length-1)/2
+    level = message['text'].scan(/🎚(\d+) \(/)[0][0]
+    endurance = message['text'].scan(/🔋(\d+)%/)[0][0]
+    experience = to_int(message['text'].scan(/\((.+) из/)[0][0])
+    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, stars: stars, level: level, endurance: endurance, experience: experience)
     result_str << user.inspect
   end
 
@@ -149,6 +150,10 @@ module Parsed
 
   def name2(message)
     Time.at(message['forward_date']).strftime('%Y-%m-%d-')+message['text'].scan(/на (\d+) часов/)[0][0]
+  end
+
+  def name3(message)
+    (Time.at(message['forward_date'])-1.day).strftime('%Y-%m-%d-')+message['text'].scan(/<D0><BD><D0><B0> (\d+) <D1><87><D0><B0><D1><81><D0><BE><D0><B2>/)[0][0]
   end
 
   def to_int(s)

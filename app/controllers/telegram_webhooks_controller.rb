@@ -1,5 +1,6 @@
 class TelegramWebhooksController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
+  include Parsed
   include Showing
   before_action :set_user, only: [:me]
   
@@ -68,7 +69,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
   end
 
   def message(message)
-    respond_with :message, text: t('.content', text: message['text'])
+    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
   end
 
   def inline_query(query, offset)

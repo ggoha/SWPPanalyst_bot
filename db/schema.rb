@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170917193606) do
+ActiveRecord::Schema.define(version: 20170919153159) do
 
   create_table "battles", force: :cascade do |t|
     t.integer  "company_id"
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20170917193606) do
   create_table "companies", force: :cascade do |t|
     t.string  "title",               null: false
     t.integer "score",   default: 0
-    t.integer "sadness", default: 0
+    t.integer "sadness"
   end
 
   create_table "divisions", force: :cascade do |t|
@@ -44,7 +44,6 @@ ActiveRecord::Schema.define(version: 20170917193606) do
     t.integer "money"
     t.integer "score"
     t.boolean "active"
-    t.float   "comrades_percentage"
     t.float   "buff"
   end
 
@@ -66,6 +65,10 @@ ActiveRecord::Schema.define(version: 20170917193606) do
     t.integer "cunning"
     t.integer "wisdom"
     t.integer "rage",        default: 0
+    t.integer "level"
+    t.integer "stars"
+    t.integer "endurance"
+    t.integer "experience"
   end
 
 end
