@@ -21,7 +21,7 @@ module Showing
       result << "*#{division.title}*"
       division.users.each do |user|
         result << "#{SMILE[user.company_id]}#{user.game_name}\n"
-        result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom}\n"
+        result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} 🔋#{user.endurance}\n"
         result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
       end
       result << "\n"
@@ -33,7 +33,7 @@ module Showing
     result = ''
     result << "#{SMILE[user.company_id]}*#{user.game_name}* #{user.division.title}\n"
     result << "Администратор\n" if user.admin?
-    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom}\n"
+    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} 🔋#{user.endurance}\n"
     result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
 
     result << "📋#{user.reports.count}(#{report_stats(user.reports)})\n"

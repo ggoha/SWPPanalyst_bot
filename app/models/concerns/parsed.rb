@@ -13,6 +13,7 @@ module Parsed
     return :parse_report if message['text'].include?('Твои результаты в битве')
     return :parse_full_profile if message['text'].include?('До следующей Битвы')
     return :parse_compact_profile if message['text'].include?('Битва через')
+    return :parse_endurance if message['text'].include?('🔋Выносливость:')
     return :parse_bag if message['text'].include?('#SWОтделыБаг')
     return :parse_feature if message['text'].include?('#SWОтделыИдея')
     :parse_undefined
@@ -118,8 +119,8 @@ module Parsed
     cunning = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
     wisdom = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
     stars = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length-1)/2
-    level = message['text'].scan(/Уровень:(\d+)/)[0][0]
-    endurance = message['text'].scan(/Выносливость:(\d+)%/)[0][0]
+    level = message['text'].scan(/Уровень: (\d+)/)[0][0]
+    endurance = message['text'].scan(/Выносливость: (\d+)%/)[0][0]
     experience = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
     user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, stars: stars, level: level, endurance: endurance, experience: experience)
     result_str << user.inspect
@@ -159,7 +160,7 @@ module Parsed
     return nil unless (user.theory && user.practice)
     current_practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     current_theory = to_int(message['text'].scan(/🎓(.+)🐿/)[0][0])
-    message['text'].include?('Ты защищал') ? (current_theory.to_f/user.theory-1)*100/0.8 : (current_practice.to_f/user.practice-1)*100/0.6
+    message['text'].include?('Ты защищал') ? (current_theory.to_f/user.theory-1)*100/(0.8*(1+user.rage*0.2)) : (current_practice.to_f/user.practice-1)*100/(0.6*(1+user.rage*0.2))
   end
 
   def name(message)
