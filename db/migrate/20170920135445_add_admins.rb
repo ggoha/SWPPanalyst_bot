@@ -12,8 +12,8 @@ class AddAdmins < ActiveRecord::Migration[5.0]
       result.each do |administrator|
         user = User.find_by_telegram_id(administrator['user']['id'].to_s)
         if user
-          user.update_attributes(type: 'Admin')
-          user.divisions << d
+          admin = user.update_attributes(type: 'Admin')
+          admin.moderated_divisions << d
         end
       end
     end
