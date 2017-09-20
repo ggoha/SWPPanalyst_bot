@@ -40,9 +40,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: "Автопин #{value}"   
   end
 
-  def pin_message(message)
-    @admin.moderated_divisions.each {|d| d.update_attributes(message: message)}
-    respond_with :message, text: "Сообщения для автопина #{message}"       
+  def pin_message(*args)
+    @admin.moderated_divisions.each {|d| d.update_attributes(message: args.join(' '))}
+    respond_with :message, text: "Сообщения для автопина #{args.join(' ')}"       
   end
 
   def users

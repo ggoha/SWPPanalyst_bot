@@ -18,7 +18,7 @@ module Showing
   def users_report(divisions)
     result = ''
     divisions.each do |division|
-      result << "*#{user.division.title}*"
+      result << "*#{division.title}*"
       division.users.each do |user|
         result << "#{SMILE[user.company_id]}#{user.game_name}\n"
         result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom}\n"
