@@ -32,7 +32,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def me
-    respond_with :message, text: user(@user), parse_mode: 'Markdown'
+    respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
   end
 
   def autopin(value)
@@ -46,7 +46,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def users
-    respond_with :message, text: users(@admin.moderated_divisions), parse_mode: 'Markdown'
+    respond_with :message, text: users_report(@admin.moderated_divisions), parse_mode: 'Markdown'
   end
 
   private
