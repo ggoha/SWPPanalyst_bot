@@ -3,8 +3,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Parsed
   include Showing
 
-  before_action :set_division, only: [:summary]
-  before_action :set_user, only: [:me]
+  before_action :set_division, only: [:summary, :users]
+  before_action :set_user, only: [:me, :users]
+  before_action :admin_only, only: [:users]
 
   context_to_action!
 
@@ -31,7 +32,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def me
-    respond_with :message, text: user(@user)
+    respond_with :message, text: user(@user), parse_mode: 'Markdown'
+  end
+
+  def users
   end
 
   private
@@ -65,5 +69,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def set_user
     @user = User.find_by_telegram_id(update['message']['from']['id'])
+  end
+
+  def admin_only
+    throw :abort unless @user.admin?
   end
 end

@@ -3,6 +3,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
   include Parsed
   include Showing
   before_action :set_user, only: [:me]
+  before_action :admin_only, only: [:users]
   
   context_to_action!
 
@@ -32,6 +33,10 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
 
   def me
     respond_with :message, text: user(@user)
+  end
+
+  def users
+    respond_with :message, text: 'Можно'
   end
 
   def keyboard(value = nil, *)
@@ -115,5 +120,9 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
 
   def set_user
     @user = User.find_by_telegram_id(update['message']['from']['id'])
+  end
+
+  def admin_only
+    throw :abort if rand(3) > 1
   end
 end

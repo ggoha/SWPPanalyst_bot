@@ -1,0 +1,20 @@
+class AddAdmins < ActiveRecord::Migration[5.0]
+  def change
+    add_column :users, :type, :string, default: 'User'
+    create_table :admin_divisions do |t|
+      t.integer :company_id
+      t.integer :admin_id
+    end
+    # bot = Telegram.bots[:division]
+    # Division.all.each do |d|
+    #   result = bot.get_chat_administrators(chat_id: d.telegram_id)['result']
+    #   result.each do |administrator|
+    #     user = User.find_by_telegram_id(a['user']['id'])
+    #     if user
+    #       user.update_attributes(type: admin)
+    #       user.divisions << d
+    #     end
+    #   end
+    # end
+  end
+end

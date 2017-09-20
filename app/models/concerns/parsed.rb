@@ -11,7 +11,7 @@ module Parsed
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
     return :parse_report if message['text'].include?('Твои результаты в битве')
-    return :parse_full_profile if message['text'].include?('Навыки')
+    return :parse_full_profile if message['text'].include?('До следующей Битвы')
     return :parse_compact_profile if message['text'].include?('Битва через')
     return :parse_bag if message['text'].include?('#SWОтделыБаг')
     return :parse_feature if message['text'].include?('#SWОтделыИдея')
@@ -104,6 +104,23 @@ module Parsed
     buff = buff(message, user)
     report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
     result_str << report.inspect
+  end
+
+  def parse_full_profile(message)
+    text = message['text']
+    result_str = ''
+    
+    user = User.find_or_create(message)
+    practice = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
+    theory = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
+    cunning = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
+    wisdom = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
+    stars = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length-1)/2
+    level = message['text'].scan(/Уровень:(\d+)/)[0][0]
+    endurance = message['text'].scan(/Выносливость:(\d+)%/)[0][0]
+    experience = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
+    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, stars: stars, level: level, endurance: endurance, experience: experience)
+    result_str << user.inspect
   end
 
   def parse_compact_profile(message)
