@@ -4,8 +4,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Showing
 
   before_action :set_division, only: [:summary, :users]
-  before_action :set_user, only: [:me, :users, :autopin, :pin_message]
-  before_action :admin_only, only: [:users, :autopin, :pin_message]
+  before_action :set_user, only: [:me]
+  before_action :set_admin, only: [:users, :autopin, :pin_message]
 
   context_to_action!
 
@@ -82,7 +82,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     @user = User.find_by_telegram_id(update['message']['from']['id'])
   end
 
-  def admin_only
-    throw :abort unless @user.admin?
+  def set_admin
+    @admin = Admin.find_by_telegram_id(update['message']['from']['id'])
+    throw :abort unless @admin
   end
 end
