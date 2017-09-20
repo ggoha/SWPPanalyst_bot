@@ -6,6 +6,10 @@ class User < ApplicationRecord
 
   SMILE = { '📯' => 1, '🤖' => 2, '⚡️' => 3, '☂️' => 4, '🎩' => 5 }
 
+  def admin?
+    type == 'Asdmin'
+  end
+
   def self.find_or_create(message)
     find_by_telegram_id(message['from']['id']) ? find_by_telegram_id(message['from']['id']) : Division.find_by_telegram_id(message['chat']['id'])
                                                                                             .users.create(telegram_id: message['from']['id'], 

@@ -1,6 +1,7 @@
 class AddAdmins < ActiveRecord::Migration[5.0]
   def change
     add_column :users, :type, :string, default: 'User'
+    add_column :divisions, :message, :string, default: '15 минут до взлома, не забудьте поесть и слить деньги в акции' 
     create_table :admin_divisions do |t|
       t.integer :company_id
       t.integer :admin_id

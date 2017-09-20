@@ -4,8 +4,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Showing
 
   before_action :set_division, only: [:summary, :users]
-  before_action :set_user, only: [:me, :users]
-  before_action :admin_only, only: [:users]
+  before_action :set_user, only: [:me, :users, :autopin, :pin_message]
+  before_action :admin_only, only: [:users, :autopin, :pin_message]
 
   context_to_action!
 
@@ -35,7 +35,18 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: user(@user), parse_mode: 'Markdown'
   end
 
+  def autopin(value)
+    @user.moderated_divisions.each {|d| d.update_attributes(autopin: value)}
+    respond_with :message, text: "Автопин #{value}"   
+  end
+
+  def pin_message(message)
+    @user.moderated_divisions.each {|d| d.update_attributes(message: message)}
+    respond_with :message, text: "Сообщения для автопина #{message}"       
+  end
+
   def users
+    respond_with :message, text: users(@user.moderated_divisions), parse_mode: 'Markdown'
   end
 
   private
