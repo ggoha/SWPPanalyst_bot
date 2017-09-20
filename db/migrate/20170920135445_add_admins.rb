@@ -10,9 +10,9 @@ class AddAdmins < ActiveRecord::Migration[5.0]
     Division.all.each do |d|
       result = bot.get_chat_administrators(chat_id: d.telegram_id)['result']
       result.each do |administrator|
-        user = User.find_by_telegram_id(a['user']['id'])
+        user = User.find_by_telegram_id(administrator['user']['id'].to_s)
         if user
-          user.update_attributes(type: admin)
+          user.update_attributes(type: 'Admin')
           user.divisions << d
         end
       end
