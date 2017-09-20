@@ -15,7 +15,7 @@ module Showing
     reports.group(:kill).count.map{|kill, count| "#{KILL[kill]}#{count}"}.join('|')
   end
 
-  def users(divisions)
+  def users_report(divisions)
     result = ''
     divisions.each do |division|
       result << "*#{user.division.title}*"
@@ -29,7 +29,7 @@ module Showing
     result
   end
 
-  def user(user)
+  def user_report(user)
     result = ''
     result << "#{SMILE[user.company_id]}*#{user.game_name}* #{user.division.title}\n"
     result << "Администратор\n" if user.admin?
