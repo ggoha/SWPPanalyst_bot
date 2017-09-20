@@ -1,3 +1,3 @@
-every '45 9,12,15,18,21 * * *' do
+every '45 6,8,12,15,18 * * *' do
   rake "group:remind"
 end

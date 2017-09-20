@@ -7,7 +7,7 @@ class User < ApplicationRecord
   SMILE = { '📯' => 1, '🤖' => 2, '⚡️' => 3, '☂️' => 4, '🎩' => 5 }
 
   def admin?
-    type == 'Asdmin'
+    type == 'Admin'
   end
 
   def self.find_or_create(message)

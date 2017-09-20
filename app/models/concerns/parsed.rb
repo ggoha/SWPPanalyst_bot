@@ -31,10 +31,12 @@ module Parsed
   end
 
   def parse_feature(message)
+    bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
     respond_with :message, text: t('.parse_feature.content')
   end
 
   def parse_bag(message)
+    bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
     respond_with :message, text: t('.parse_bag.content')
   end
 

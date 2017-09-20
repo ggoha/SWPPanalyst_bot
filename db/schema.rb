@@ -13,7 +13,7 @@
 ActiveRecord::Schema.define(version: 20170920135445) do
 
   create_table "admin_divisions", force: :cascade do |t|
-    t.integer "company_id"
+    t.integer "division_id"
     t.integer "admin_id"
   end
 
@@ -31,14 +31,15 @@ ActiveRecord::Schema.define(version: 20170920135445) do
   create_table "companies", force: :cascade do |t|
     t.string  "title",               null: false
     t.integer "score",   default: 0
-    t.integer "sadness", default: 0
+    t.integer "sadness"
   end
 
   create_table "divisions", force: :cascade do |t|
-    t.string  "title",                       null: false
+    t.string  "title",                                                                                 null: false
     t.string  "telegram_id"
     t.integer "company_id"
     t.boolean "autopin",     default: false
+    t.string  "message",     default: "15 минут до взлома, не забудьте поесть и слить деньги в акции"
   end
 
   create_table "reports", force: :cascade do |t|
@@ -49,7 +50,6 @@ ActiveRecord::Schema.define(version: 20170920135445) do
     t.integer "money"
     t.integer "score"
     t.boolean "active"
-    t.float   "comrades_percentage"
     t.float   "buff"
   end
 
