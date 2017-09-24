@@ -48,7 +48,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def divisions
     respond_with :message, text: 'Выбери отдел', reply_markup: {
-      inline_keyboard: @admin.moderated_divisions.map{|d| { text: d.title, callback_data: d.id } }
+      inline_keyboard: [@admin.moderated_divisions.map{|d| { text: d.title, callback_data: d.id.to_s } }]
     }    
   end
 
@@ -90,7 +90,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def find_division
-    @division = Divisiom.find(session[:division])
+    @division = Division.find(session[:division])
   end
 
   def set_user

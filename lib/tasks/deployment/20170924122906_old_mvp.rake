@@ -7,7 +7,7 @@ namespace :after_party do
     Company.our.battles.each do |battle|
       Division.all.each do |division|
         mvp = battle.reports.for_division(division).order(score: :desc).first
-        mvp.user.reward_mvp if mvp && mvp.user.score > 0
+        mvp.user.reward_mvp if mvp && mvp.score > 0
       end
     end
     # Update task as completed.  If you remove the line below, the task will

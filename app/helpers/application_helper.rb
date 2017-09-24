@@ -45,6 +45,7 @@ module ApplicationHelper
     result << "⚔️ #{user.reports.sum(:kill)}(#{report_kill(user.reports)})\n"
     result << "💵#{user.reports.sum(:money)}\n"
     result << "🏆#{user.reports.sum(:score)}\n"
+    result << "🏅#{user.mvp}\n"
     result
   end
 
