@@ -5,7 +5,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   before_action :set_division, only: [:summary, :users]
   before_action :set_user, only: [:me]
-  before_action :set_admin, only: [:users, :autopin, :pin_message]
+  before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message]
   before_action :find_division, only: [:autopin, :pin_message]
 
   context_to_action!
@@ -38,12 +38,12 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def autopin(value)
     @division.update_attributes(autopin: value)
-    respond_with :message, text: "Для #{division.title} автопин #{value}"   
+    respond_with :message, text: "Для #{@division.title} автопин #{value}"   
   end
 
   def pin_message(*args)
-    @division.update_attributes(message: args.join(' ')
-    respond_with :message, text: "Для #{division.title} установлено сообщение автопина #{args.join(' ')}"       
+    @division.update_attributes(message: args.join(' '))
+    respond_with :message, text: "Для #{@division.title} установлено сообщение автопина #{args.join(' ')}"       
   end
 
   def divisions
