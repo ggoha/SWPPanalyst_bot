@@ -10,6 +10,10 @@ class User < ApplicationRecord
     type == 'Admin'
   end
 
+  def reward_mvp
+    update_attributes(mvp: mvp + 1)
+  end
+
   def self.find_or_create(message)
     find_by_telegram_id(message['from']['id']) ? find_by_telegram_id(message['from']['id']) : Division.find_by_telegram_id(message['chat']['id'])
                                                                                             .users.create(telegram_id: message['from']['id'], 

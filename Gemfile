@@ -27,6 +27,7 @@ gem 'jquery-rails'
 gem 'turbolinks', '~> 5'
 
 gem 'telegram-bot', github: 'telegram-bot-rb/telegram-bot'
+gem 'after_party'
 gem 'whenever', :require => false
 #gem 'gruff'
 

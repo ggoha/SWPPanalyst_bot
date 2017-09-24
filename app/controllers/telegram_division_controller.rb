@@ -6,6 +6,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   before_action :set_division, only: [:summary, :users]
   before_action :set_user, only: [:me]
   before_action :set_admin, only: [:users, :autopin, :pin_message]
+  before_action :find_division, only: [:autopin, :pin_message]
 
   context_to_action!
 
@@ -36,17 +37,27 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def autopin(value)
-    @admin.moderated_divisions.each {|d| d.update_attributes(autopin: value)}
-    respond_with :message, text: "Автопин #{value}"   
+    @division.update_attributes(autopin: value)
+    respond_with :message, text: "Для #{division.title} автопин #{value}"   
   end
 
   def pin_message(*args)
-    @admin.moderated_divisions.each {|d| d.update_attributes(message: args.join(' '))}
-    respond_with :message, text: "Сообщения для автопина #{args.join(' ')}"       
+    @division.update_attributes(message: args.join(' ')
+    respond_with :message, text: "Для #{division.title} установлено сообщение автопина #{args.join(' ')}"       
+  end
+
+  def divisions
+    respond_with :message, text: 'Выбери отдел', reply_markup: {
+      inline_keyboard: @admin.moderated_divisions.map{|d| { text: d.title, callback_data: d.id } }
+    }    
+  end
+
+  def callback_query(data)
+    session[:division] = data
   end
 
   def users
-    respond_with :message, text: users_report(@admin.moderated_divisions), parse_mode: 'Markdown'
+    respond_with :message, text: users_report(@admin.moderated_divisions), parse_mode: 'Markdown', disable_web_page_preview: true
   end
 
   private
@@ -76,6 +87,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])
+  end
+
+  def find_division
+    @division = Divisiom.find(session[:division])
   end
 
   def set_user

@@ -42,4 +42,13 @@ module Showing
     result << "🏆#{user.reports.sum(:score)}\n"
     result
   end
+
+  def mvp(reports)
+    mvp = reports.order(score: :desc).first
+    "🏅 MVP - #{mvp.user.game_name} : #{mvp.score}\n"
+  end
+
+  def current_situation(companies)
+    'Текущие грусть: ' + companies.map { |i| "#{i.title} 😔#{i.sadness}" }.join(', ')
+  end
 end

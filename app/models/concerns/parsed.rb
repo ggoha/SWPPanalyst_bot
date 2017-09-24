@@ -10,10 +10,12 @@ module Parsed
     return :parse_battle unless message['text'].scan(/По итогам битвы/).empty?
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?
-    return :parse_report if message['text'].include?('Твои результаты в битве')
-    return :parse_full_profile if message['text'].include?('До следующей Битвы')
-    return :parse_compact_profile if message['text'].include?('Битва через')
-    return :parse_endurance if message['text'].include?('🔋Выносливость:')
+    if from_SW(message)
+      return :parse_report if message['text'].include?('Твои результаты в битве')
+      return :parse_full_profile if message['text'].include?('До следующей Битвы')
+      return :parse_compact_profile if message['text'].include?('Битва через')
+      return :parse_endurance if message['text'].include?('🔋Выносливость:')
+    end
     return :parse_bag if message['text'].include?('#SWОтделыБаг')
     return :parse_feature if message['text'].include?('#SWОтделыИдея')
     :parse_undefined
@@ -44,7 +46,7 @@ module Parsed
   def parse_invite(message)
     result_str = ''
     division = Division.find_or_create(message)
-    result_str << division.inspect   
+    result_str << division.inspect
     result_str
   end
 
@@ -118,7 +120,7 @@ module Parsed
     theory = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
     cunning = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
     wisdom = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
-    stars = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length-1)/2
+    stars = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length - 1) / 2
     level = message['text'].scan(/Уровень: (\d+)/)[0][0]
     endurance = message['text'].scan(/Выносливость: (\d+)%/)[0][0]
     experience = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
@@ -135,7 +137,7 @@ module Parsed
     theory = to_int(message['text'].scan(/🎓(.+)/)[0][0])
     cunning = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
     wisdom = to_int(message['text'].scan(/🐢(.+)/)[0][0])
-    stars = (message['text'].scan(/(.+)\/cool/)[0][0].length-1)/2
+    stars = (message['text'].scan(/(.+)\/cool/)[0][0].length - 1) / 2
     level = message['text'].scan(/🎚(\d+) \(/)[0][0]
     endurance = message['text'].scan(/🔋(\d+)%/)[0][0]
     experience = to_int(message['text'].scan(/\((.+) из/)[0][0])
@@ -157,10 +159,10 @@ module Parsed
 
   def buff(message, user)
     return nil unless message['text'].include?('🔨')
-    return nil unless (user.theory && user.practice)
+    return nil unless user.theory && user.practice
     current_practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     current_theory = to_int(message['text'].scan(/🎓(.+)🐿/)[0][0])
-    message['text'].include?('Ты защищал') ? (current_theory.to_f/user.theory-1)*100/(0.8*(1+user.rage*0.2)) : (current_practice.to_f/user.practice-1)*100/(0.6*(1+user.rage*0.2))
+    message['text'].include?('Ты защищал') ? (current_theory.to_f/user.theory-1)*100/(1.6*(1+user.rage*0.2)) : (current_practice.to_f/user.practice-1)*100/(0.6*(1+user.rage*0.2))
   end
 
   def name(message)
@@ -178,5 +180,11 @@ module Parsed
 
   def to_int(s)
     s.delete('  ').to_i
+  end
+
+  def from_SW(message)
+    message['forward_from'] && 
+    (message['forward_from']['id'] == Rails.application.secrets['telegram']['SW'] ||
+    message['forward_from']['id'] == Rails.application.secrets['telegram']['SW1'] )
   end
 end
