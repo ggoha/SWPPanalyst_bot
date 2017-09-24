@@ -8,7 +8,7 @@ module ApplicationHelper
 
   def user_link(user)
     if user.username
-      "[#{user.game_name.delete('[]')}](#{user.username})"
+      "[#{user.game_name.delete('[]')}](t.me/#{user.username})"
     else
       user.game_name
     end
