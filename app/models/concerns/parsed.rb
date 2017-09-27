@@ -107,9 +107,12 @@ module Parsed
     kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
     money = text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i
     score = text.scan(/Твой вклад: (.+)\n/)[0][0].to_i
+    endurance = text.scan(/🔋Осталось выносливости: (\d+)%/)[0][0]
     buff = buff(message, user)
     report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
+    user.update_endurance(endurance)
     result_str << report.inspect
+    [result_str, 'Репорт обработан']
   end
 
   def parse_full_profile(message)
@@ -117,16 +120,19 @@ module Parsed
     result_str = ''
     
     user = User.find_or_create(message)
-    practice = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
-    theory = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
-    cunning = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
-    wisdom = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
-    stars = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length - 1) / 2
-    level = message['text'].scan(/Уровень: (\d+)/)[0][0]
+    params = {}
+    params[:practice] = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
+    params[:theory] = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
+    params[:cunning] = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
+    params[:wisdom] = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
+    params[:stars] = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length - 1) / 2
+    params[:level] = message['text'].scan(/Уровень: (\d+)/)[0][0]
+    params[:experience] = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
     endurance = message['text'].scan(/Выносливость: (\d+)%/)[0][0]
-    experience = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
-    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, stars: stars, level: level, endurance: endurance, experience: experience)
+    user.update_profile(params)
+    user.update_endurance(endurance)
     result_str << user.inspect
+    [result_str, 'Профиль обработан']
   end
 
   def parse_compact_profile(message)
@@ -134,16 +140,19 @@ module Parsed
     result_str = ''
     
     user = User.find_or_create(message)
-    practice = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
-    theory = to_int(message['text'].scan(/🎓(.+)/)[0][0])
-    cunning = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
-    wisdom = to_int(message['text'].scan(/🐢(.+)/)[0][0])
-    stars = (message['text'].scan(/(.+)\/cool/)[0][0].length - 1) / 2
-    level = message['text'].scan(/🎚(\d+) \(/)[0][0]
+    params = {}
+    params[:practice] = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
+    params[:theory] = to_int(message['text'].scan(/🎓(.+)/)[0][0])
+    params[:cunning] = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
+    params[:wisdom] = to_int(message['text'].scan(/🐢(.+)/)[0][0])
+    params[:stars] = (message['text'].scan(/(.+)\/cool/)[0][0].length - 1) / 2
+    params[:level] = message['text'].scan(/🎚(\d+) \(/)[0][0]
+    params[:experience] = to_int(message['text'].scan(/\((.+) из/)[0][0])
     endurance = message['text'].scan(/🔋(\d+)%/)[0][0]
-    experience = to_int(message['text'].scan(/\((.+) из/)[0][0])
-    user.update_attributes(practice: practice, theory: theory, cunning: cunning, wisdom: wisdom, stars: stars, level: level, endurance: endurance, experience: experience)
+    user.update_profile(params)
+    user.update_endurance(endurance)
     result_str << user.inspect
+    [result_str, 'Профиль обработан']
   end
 
   def parse_endurance(message)
@@ -152,8 +161,9 @@ module Parsed
 
     user = User.find_or_create(message)
     endurance = message['text'].scan(/🔋Выносливость: (\d+)%/)[0][0]
-    user.update_attributes(endurance: endurance)
+    user.update_endurance(endurance)
     result_str << user.inspect
+    [result_str, 'Сообщение о еде обработано']
   end
 
   private

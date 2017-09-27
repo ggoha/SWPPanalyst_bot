@@ -6,6 +6,14 @@ module ApplicationHelper
     user.stars ? '⭐️' * user.stars : ''
   end
 
+  def endurance(user)
+    if user.endurance_update_at >= Battle.last.at
+      "🔋#{user.endurance}"
+    else
+      "#{user.endurance}"
+    end
+  end
+
   def user_link(user)
     if user.username
       "[#{user.game_name.delete('[]')}](t.me/#{user.username})"
@@ -23,15 +31,15 @@ module ApplicationHelper
   end
 
   def users_report(divisions)
-    result = ''
-    divisions.each do |division|
+    divisions.each_with_object('') do |division, result|
       result << "*#{division.title}*\n"
-      division.users.each do |user|
-        result << "#{SMILE[user.company_id]}#{user_link(user)} 🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} 🔋#{user.endurance}\n"
-      end
+      division.users.each_with_object(result) { |user, str| str << user_compact_report(user) }
       result << "\n"
     end
-    result
+  end
+
+  def user_compact_report(user)
+    "#{SMILE[user.company_id]}#{user_link(user)} 🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance}\n"
   end
 
   def user_report(user)

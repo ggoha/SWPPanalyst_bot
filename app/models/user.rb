@@ -14,6 +14,14 @@ class User < ApplicationRecord
     update_attributes(mvp: mvp + 1)
   end
 
+  def update_endurance(endurance)
+    update_attributes(endurance: endurance, endurance_update_at: DateTime.now)
+  end
+
+  def update_profile(hash)
+    user.update_profile(hash.merge(profile_update_at: DateTime.now))
+  end
+
   def self.find_or_create(message)
     find_by_telegram_id(message['from']['id']) ? find_by_telegram_id(message['from']['id']) : Division.find_by_telegram_id(message['chat']['id'])
                                                                                             .users.create(telegram_id: message['from']['id'], 

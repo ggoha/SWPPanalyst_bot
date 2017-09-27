@@ -10,7 +10,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   context_to_action!
 
   def start(*)
-    respond_with :message, text: 'Divisiom'
+    respond_with :message, text: t('.content')
   end
 
   def help(*)
@@ -19,7 +19,11 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def message(message)
     type = message_type(message)
-    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, type) if type!=:parse_undefined
+    if type != :parse_undefined
+      private_nessage, public_message = parse(message, type)
+      respond_with :message, text: public_message if message['chat']['type'] == 'private'
+      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_nessage
+    end
   end
 
   def summary
