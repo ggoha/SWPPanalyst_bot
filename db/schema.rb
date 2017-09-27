@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170924122732) do
+ActiveRecord::Schema.define(version: 20170924123638) do
 
   create_table "admin_divisions", force: :cascade do |t|
     t.integer "division_id"
@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(version: 20170924122732) do
     t.integer "endurance"
     t.integer "experience"
     t.string  "type",        default: "User"
+    t.integer "mvp",         default: 0
   end
 
 end

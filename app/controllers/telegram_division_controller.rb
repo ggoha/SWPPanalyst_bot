@@ -1,7 +1,6 @@
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include Parsed
-  include Showing
 
   before_action :set_division, only: [:summary, :users]
   before_action :set_user, only: [:me]
@@ -19,12 +18,11 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def message(message)
-    #bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
-    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, message_type(message))
+    type = message_type(message)
+    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: parse(message, type) if type!=:parse_undefined
   end
 
   def summary
-    #bot.forward_message message_id: message['message_id'], from_chat_id: message['chat']['id'], chat_id: Rails.application.secrets['telegram']['me']
     respond_with :message, text: summary_report, parse_mode: 'Markdown'
   end
 
@@ -38,17 +36,17 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def autopin(value)
     @division.update_attributes(autopin: value)
-    respond_with :message, text: "Для #{@division.title} автопин #{value}"   
+    respond_with :message, text: "Для #{@division.title} автопин #{value}"
   end
 
   def pin_message(*args)
     @division.update_attributes(message: args.join(' '))
-    respond_with :message, text: "Для #{@division.title} установлено сообщение автопина #{args.join(' ')}"       
+    respond_with :message, text: "Для #{@division.title} установлено сообщение автопина #{args.join(' ')}"
   end
 
   def divisions
     respond_with :message, text: 'Выбери отдел', reply_markup: {
-      inline_keyboard: [@admin.moderated_divisions.map{|d| { text: d.title, callback_data: d.id.to_s } }]
+      inline_keyboard: [@admin.moderated_divisions.map { |d| { text: d.title, callback_data: d.id.to_s } }]
     }    
   end
 
@@ -77,12 +75,12 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
       result_str << "\nОни унесли #{arr.sum(:money)}💵\n"
       result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n"
       sum_score = arr.sum(:score)
-      result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
+      result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
     end
     sum_score = reports.pluck(:score).inject(0, :+)
     mvp = reports.order(score: :desc).first
     result_str << "🏅 MVP - #{mvp.user.game_name} : #{mvp.score}\n"
-    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n"
+    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
   end
 
   def set_division

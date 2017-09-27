@@ -7,6 +7,7 @@ module Parsed
 
   def message_type(message)
     return :parse_invite if message['new_chat_member'].present? && message['new_chat_member']['id']==Rails.application.secrets['telegram']['bots']['division']['id']
+    return :parse_undefined unless message['text']
     return :parse_battle unless message['text'].scan(/По итогам битвы/).empty?
     return :parse_stock unless message['text'].scan(/👍Акции всех|👎На рынке/).empty?
     return :parse_totals unless message['text'].scan(/Рейтинг компаний за день/).empty?

@@ -4,7 +4,7 @@ class Battle < ApplicationRecord
   before_save :update_summary_score
   after_save :update_sadness
 
-  validates_uniqueness_of :name, :scope => :company_id
+  validates_uniqueness_of :name, scope: :company_id
 
   scope :week, -> { where(at: (Time.now - 1.week)..Time.now) }
   scope :day, -> { where(at: (Time.now - 1.day)..Time.now) }
@@ -12,15 +12,15 @@ class Battle < ApplicationRecord
   
   def update_summary_score
     self.summary_score = company.score + score
-    company.update_attributes(score: self.summary_score)
+    company.update_attributes(score: summary_score)
   end
 
   def update_sadness
-    company.update_attributes(sadness: result ? 0 : [company.sadness+1, 5].min)
+    company.update_attributes(sadness: result ? 0 : [company.sadness + 1, 5].min)
   end
 
   def add_reports
-    reports << Report.find_by_battle_name(at.strftime("%Y-%M-%D-%H"))
+    reports << Report.find_by_battle_name(at.strftime('%Y-%M-%D-%H'))
   end
 
   def losses

@@ -1,7 +1,6 @@
 class TelegramWebhooksController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include Parsed
-  include Showing
   before_action :set_user, only: [:me]
   before_action :admin_only, only: [:users]
   

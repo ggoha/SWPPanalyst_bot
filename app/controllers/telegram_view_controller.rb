@@ -25,7 +25,7 @@ class TelegramViewController < Telegram::Bot::UpdatesController
     respond_with :message, text: 'Выберите тип', reply_markup: {
       keyboard: [TYPE.keys],
       resize_keyboard: true,
-      selective: true,
+      selective: true
     }
   end
 
@@ -33,7 +33,7 @@ class TelegramViewController < Telegram::Bot::UpdatesController
     respond_with :message, text: 'Выберите период', reply_markup: {
       keyboard: [DURATION.keys],
       resize_keyboard: true,
-      selective: true,
+      selective: true
     }
   end
 
@@ -55,7 +55,7 @@ class TelegramViewController < Telegram::Bot::UpdatesController
       respond_with :photo, photo: File.open('public/line_xy.png'), reply_markup: {
         keyboard: [TYPE.keys],
         resize_keyboard: true,
-        selective: true,
+        selective: true
       }
     else
       save_context :duration
@@ -63,7 +63,7 @@ class TelegramViewController < Telegram::Bot::UpdatesController
     end
   end
 
-  def message(message)
+  def message(_message)
     save_context :type
     type_keyboard
   end

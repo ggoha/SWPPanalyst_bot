@@ -4,7 +4,7 @@ class Division < ApplicationRecord
   validates_uniqueness_of :telegram_id
   
   has_many :admins, through: :admin_divisions
-  has_many :admin_divisions  
+  has_many :admin_divisions
 
   def admin?(user)
     admins.include?(user)

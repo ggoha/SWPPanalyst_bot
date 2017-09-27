@@ -4,7 +4,7 @@ class User < ApplicationRecord
   belongs_to :division
   validates_uniqueness_of :telegram_id
 
-  SMILE = { '📯' => 1, '🤖' => 2, '⚡️' => 3, '☂️' => 4, '🎩' => 5 }
+  SMILE = { '📯' => 1, '🤖' => 2, '⚡️' => 3, '☂️' => 4, '🎩' => 5 }.freeze
 
   def admin?
     type == 'Admin'

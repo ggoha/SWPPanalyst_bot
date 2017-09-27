@@ -1,6 +1,6 @@
 module ApplicationHelper
-  SMILE = { 1 => '📯', 2 => '🤖', 3 => '⚡️', 4 => '☂️' , 5 => '🎩' }
-  KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }
+  SMILE = { 1 => '📯', 2 => '🤖', 3 => '⚡️', 4 => '☂️', 5 => '🎩' }.freeze
+  KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
   def stars(user)
     user.stars ? '⭐️' * user.stars : ''
@@ -15,11 +15,11 @@ module ApplicationHelper
   end
 
   def report_stats(reports)
-    reports.group(:broked_company_id).count.map{|company_id, count| "#{SMILE[company_id]}#{count}"}.join('|')
+    reports.group(:broked_company_id).count.map { |company_id, count| "#{SMILE[company_id]}#{count}" }.join('|')
   end
 
   def report_kill(reports)
-    reports.group(:kill).count.map{|kill, count| "#{KILL[kill]}#{count}"}.join('|')
+    reports.group(:kill).count.map { |kill, count| "#{KILL[kill]}#{count}" }.join('|')
   end
 
   def users_report(divisions)
@@ -53,12 +53,33 @@ module ApplicationHelper
     "🏅 MVP - #{mvp.user.game_name} : #{mvp.score}\n"
   end
 
-  def mvp(reports)
+  def mvp(reports, finally = true)
     mvp = reports.order(score: :desc).first
     if mvp && mvp.score > 0
-      mvp.user.reward_mvp
+      mvp.user.reward_mvp if finally
       mvp_reports(mvp)
     end
+  end
+
+  def summary_report(division)
+    result_str = ''
+    battle = division.company.battles.last
+    reports = battle.reports.for_division(division)
+    result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
+    Company.all.each do |company|
+      arr = reports.where(broked_company_id: company.id)
+      next if arr.empty?
+      result_str << "На #{company.title} пошло #{arr.count} человек"
+      comrads_percentage = arr.average(:buff)
+      result_str << " вместе с #{comrads_percentage.round(0)} %" if comrads_percentage
+      result_str << "\nОни унесли #{arr.sum(:money)}💵\n"
+      result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n"
+      sum_score = arr.sum(:score)
+      result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
+    end
+    result_str << mvp(reports, false)
+    sum_score = reports.sum(:score)
+    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
   end
 
   def current_situation(companies)

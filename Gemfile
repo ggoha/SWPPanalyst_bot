@@ -28,7 +28,8 @@ gem 'turbolinks', '~> 5'
 
 gem 'telegram-bot', github: 'telegram-bot-rb/telegram-bot'
 gem 'after_party'
-gem 'whenever', :require => false
+gem 'rollbar'
+gem 'whenever', require: false
 #gem 'gruff'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
