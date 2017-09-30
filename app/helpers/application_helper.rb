@@ -39,14 +39,14 @@ module ApplicationHelper
   end
 
   def user_compact_report(user)
-    "#{SMILE[user.company_id]}#{user_link(user)} 🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance}\n"
+    "#{SMILE[user.company_id]}#{user_link(user)} 🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}\n"
   end
 
   def user_report(user)
     result = ''
     result << "#{SMILE[user.company_id]}*#{user.game_name}* #{user.division.title}\n"
     result << "Администратор\n" if user.admin?
-    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} #{endurance}\n"
+    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} #{endurance(user)}\n"
     result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
 
     result << "📋#{user.reports.count}(#{report_stats(user.reports)})\n"
@@ -54,7 +54,8 @@ module ApplicationHelper
     result << "💵#{user.reports.sum(:money)}\n"
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
-    result << "Обновлен: #{user.profile_update_at.strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
+    # TODO
+    result << "Обновлен: #{(user.profile_update_at.+3.hours)strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
     result
   end
 
