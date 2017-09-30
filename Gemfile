@@ -30,7 +30,7 @@ gem 'telegram-bot', github: 'telegram-bot-rb/telegram-bot'
 gem 'after_party'
 gem 'rollbar'
 gem 'whenever', require: false
-#gem 'gruff'
+gem 'gruff'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'

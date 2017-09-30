@@ -3,13 +3,14 @@ class TelegramViewController < Telegram::Bot::UpdatesController
   include Grapher
   context_to_action!
 
-  DURATION = {'День' => :day, 'Неделя' => :week, 'Все' => :all }
-  TYPE = {'Акции' => :generate_stoks_line, 
-    'Деньги' => :generate_moneys_area, 
-    'Рейтинг' => :generate_points_line,
+  DURATION = { 'День' => :day, 'Неделя' => :week, 'Все' => :all }.freeze
+  TYPE = {
+    'Акции' => :generate_stoks_line,
+    'Деньги' => :generate_moneys_area,
+    # 'Рейтинг' => :generate_points_line,
     'Очки%' => :generate_percent_points_bar,
     'Очки' => :generate_points_bar
-     }
+  }.freeze
 
   def start(*)
     respond_with :message, text: 'View'

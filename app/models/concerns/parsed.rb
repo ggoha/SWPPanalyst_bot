@@ -31,7 +31,17 @@ module Parsed
   end
 
   def parse_totals(_message)
-    'не поддерживается рейтинг компаний за день'
+    text = message['text']
+    result_str = ''
+    scores = {}
+    text.scan(/(🎩|🤖|⚡️|☂️|📯)(.+)🏆/).each do |substr|
+      name, score = substr[1].split('-')
+      scores[NAME[name.strip]] = to_int(score)
+    end
+    Company.each_with_index do |company, i|
+      result_str << "#{company.title}: #{scores[i]} - #{company.scores}\n"
+    end
+    result_str
   end
 
   def parse_feature(message)

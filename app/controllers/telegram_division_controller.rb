@@ -1,5 +1,6 @@
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
+  include ApplicationHelper
   include Parsed
 
   before_action :set_division, only: [:summary, :users]
