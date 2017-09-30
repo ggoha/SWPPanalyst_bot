@@ -113,6 +113,9 @@ module Parsed
     name = name2(message)
     name2 = name3(message)
     battle_id = (user.company.battles.find_by_name(name) || user.company.battles.find_by_name(name2) ).id
+    if text.scan(/(Ты защищал|Ты взламывал) (.+)/).empty?
+      return ['Репорт не обработан, необходимо добавить компанию, которую ты вламывал', 'Репорт не обработан, необходимо добавить компанию, которую ты вламывал']
+    end
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
     kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
     money = text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i

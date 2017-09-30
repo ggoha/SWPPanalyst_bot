@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170924123638) do
+ActiveRecord::Schema.define(version: 20170927220720) do
 
   create_table "admin_divisions", force: :cascade do |t|
     t.integer "division_id"
@@ -65,22 +65,24 @@ ActiveRecord::Schema.define(version: 20170924123638) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string  "game_name",                    null: false
-    t.string  "telegram_id"
-    t.integer "company_id"
-    t.string  "username"
-    t.integer "division_id"
-    t.integer "practice"
-    t.integer "theory"
-    t.integer "cunning"
-    t.integer "wisdom"
-    t.integer "rage",        default: 0
-    t.integer "level"
-    t.integer "stars"
-    t.integer "endurance"
-    t.integer "experience"
-    t.string  "type",        default: "User"
-    t.integer "mvp",         default: 0
+    t.string   "game_name",                            null: false
+    t.string   "telegram_id"
+    t.integer  "company_id"
+    t.string   "username"
+    t.integer  "division_id"
+    t.integer  "practice"
+    t.integer  "theory"
+    t.integer  "cunning"
+    t.integer  "wisdom"
+    t.integer  "rage",                default: 0
+    t.integer  "level"
+    t.integer  "stars"
+    t.integer  "endurance"
+    t.integer  "experience"
+    t.string   "type",                default: "User"
+    t.integer  "mvp",                 default: 0
+    t.datetime "profile_update_at"
+    t.datetime "endurance_update_at"
   end
 
 end

@@ -19,7 +19,7 @@ class User < ApplicationRecord
   end
 
   def update_profile(hash)
-    user.update_profile(hash.merge(profile_update_at: DateTime.now))
+    update_profile(hash.merge(profile_update_at: DateTime.now))
   end
 
   def self.find_or_create(message)

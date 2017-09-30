@@ -10,7 +10,7 @@ module ApplicationHelper
     if user.endurance_update_at >= Battle.last.at
       "🔋#{user.endurance}"
     else
-      "#{user.endurance}"
+      "🚫#{user.endurance}"
     end
   end
 
@@ -46,7 +46,7 @@ module ApplicationHelper
     result = ''
     result << "#{SMILE[user.company_id]}*#{user.game_name}* #{user.division.title}\n"
     result << "Администратор\n" if user.admin?
-    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} 🔋#{user.endurance}\n"
+    result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} #{endurance}\n"
     result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
 
     result << "📋#{user.reports.count}(#{report_stats(user.reports)})\n"
@@ -54,6 +54,7 @@ module ApplicationHelper
     result << "💵#{user.reports.sum(:money)}\n"
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
+    result << "Обновлен: #{user.profile_update_at.strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
     result
   end
 
