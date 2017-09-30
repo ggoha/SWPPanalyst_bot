@@ -55,7 +55,7 @@ module ApplicationHelper
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
     # TODO
-    result << "Обновлен: #{(user.profile_update_at.+3.hours)strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
+    result << "Обновлен: #{(user.profile_update_at+3.hours).strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
     result
   end
 
