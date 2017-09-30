@@ -7,7 +7,7 @@ module ApplicationHelper
   end
 
   def endurance(user)
-    if user.endurance_update_at >= Battle.last.at
+    if user.endurance_update_at && user.endurance_update_at >= Battle.last.at
       "🔋#{user.endurance}"
     else
       "🚫#{user.endurance}"
