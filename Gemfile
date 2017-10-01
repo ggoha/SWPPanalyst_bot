@@ -32,6 +32,9 @@ gem 'rollbar'
 gem 'whenever', require: false
 gem 'gruff'
 
+gem "eventmachine"
+gem 'telegram-rb', github: 'ssut/telegram-rb', require: 'telegram'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
