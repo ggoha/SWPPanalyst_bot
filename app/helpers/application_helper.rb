@@ -129,7 +129,7 @@ module ApplicationHelper
       comrads_percentage = arr.average(:buff)
       our_money = arr.sum(:money) * 100 / comrads_percentage if comrads_percentage
       total_money = company.battles.last.money
-      result_str << "На #{company.title} нас было ~#{(our_money / total_money * 100).round(2)}% нападающих\n" if our_money
+      result_str << "На #{company.title} нас было #{(our_money / total_money * 100).round(2)}% нападающих\n" if our_money
     end
     sum_score = battle.reports.pluck(:score).inject(0, :+)
     result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
