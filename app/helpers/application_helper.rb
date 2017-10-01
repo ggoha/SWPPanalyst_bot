@@ -3,11 +3,11 @@ module ApplicationHelper
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
   def level(user)
-    "🎚#{user.level}".ljust(3, '-')
+    "🎚#{user.level}".ljust(3, '0')
   end
 
   def stars(user)
-    user.stars ? '⭐️' * user.stars + '🚫' * (3 - user.stars) : '🚫' * (3 - user.stars)
+    user.stars ? '⭐️' * user.stars + '🚫' * (3 - user.stars) : '🚫' * 3
   end
 
   def endurance(user)
@@ -19,7 +19,7 @@ module ApplicationHelper
   end
 
   def game_name(user)
-    user.game_name.delete('[]').ljust(15, '—')
+    user.game_name.delete('[]')
   end
 
   def user_link(user)
