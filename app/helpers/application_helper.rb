@@ -3,7 +3,7 @@ module ApplicationHelper
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
   def stars(user)
-    (user.stars ? '⭐️' * user.stars : '').ljust(3, ' ')
+    (user.stars ? '⭐️' * user.stars : '').ljust(3, '_')
   end
 
   def endurance(user)
@@ -11,15 +11,15 @@ module ApplicationHelper
       "🔋#{user.endurance}"
     else
       "🚫#{user.endurance}"
-    end.ljust(4, ' ')
+    end.ljust(4, '_')
   end
 
   def user_link(user)
     if user.username
-      "[#{user.game_name.delete('[]')}](t.me/#{user.username})"
+      "[#{user.game_name.delete('[]')}](tg://user?id=#{user.telegram_id})"
     else
       user.game_name
-    end.ljust(20, ' ')
+    end.ljust(20, '_')
   end
 
   def report_stats(reports)
