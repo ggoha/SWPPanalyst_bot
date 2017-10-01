@@ -14,12 +14,16 @@ module ApplicationHelper
     end
   end
 
+  def game_name(user)
+    user.game_name.delete('[]').ljust(15, '—')
+  end
+
   def user_link(user)
     if user.username
-      "[#{user.game_name.delete('[]')}](t.me/#{user.username})"
+      "[#{game_name(user)}](t.me/#{user.username})"
     else
-      user.game_name
-    end.ljust(20, '—')
+      game_name(user)
+    end
   end
 
   def report_stats(reports)
