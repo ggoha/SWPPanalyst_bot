@@ -2,8 +2,12 @@ module ApplicationHelper
   SMILE = { 1 => '📯', 2 => '🤖', 3 => '⚡️', 4 => '☂️', 5 => '🎩' }.freeze
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
+  def level(user)
+    '🎚'+user.level.ljust(3, '-')
+  end
+
   def stars(user)
-    (user.stars ? '⭐️' * user.stars : '').ljust(3, '🚫')
+    (user.stars ? '⭐️' * user.stars + '🚫' * (3 - user.stars) : '🚫' * (3 - user.stars)
   end
 
   def endurance(user)
@@ -43,7 +47,7 @@ module ApplicationHelper
   end
 
   def user_compact_report(user)
-    "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
+    "#{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
   def user_report(user)
