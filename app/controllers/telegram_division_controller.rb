@@ -28,7 +28,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def summary
-    respond_with :message, text: summary_report, parse_mode: 'Markdown'
+    respond_with :message, text: summary_report(@division), parse_mode: 'Markdown'
   end
 
   def hashtags
@@ -64,29 +64,6 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   private
-
-  def summary_report
-    result_str = ''
-    battle = @division.company.battles.last
-    reports = battle.reports.for_division(@division)
-    result_str << "Для #{@division.title} обработано #{reports.count} /battle\n"
-    Company.all.each do |company|
-      arr = reports.where(broked_company_id: company.id)
-      next if arr.empty?
-      result_str << "На #{company.title} пошло #{arr.count} человек"
-      comrads_percentage = arr.average(:buff)
-      result_str << " вместе с #{comrads_percentage.round(0)} %" if comrads_percentage
-      sum_money = arr.sum(:money)
-      result_str << "\nОни унесли #{arr.sum(:money)}💵\n"
-      result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n"
-      sum_score = arr.sum(:score)
-      result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
-    end
-    sum_score = reports.pluck(:score).inject(0, :+)
-    mvp = reports.order(score: :desc).first
-    result_str << "🏅 MVP - #{mvp.user.game_name} : #{mvp.score}\n"
-    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
-  end
 
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])

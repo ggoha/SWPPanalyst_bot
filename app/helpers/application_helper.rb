@@ -81,6 +81,7 @@ module ApplicationHelper
 
   def summary_report(division)
     result_str = ''
+    return 'Это команда для чатов отрядов' unless division
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
@@ -98,6 +99,37 @@ module ApplicationHelper
     result_str << mvp(reports, false)
     sum_score = reports.sum(:score)
     result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
+  end
+
+  def summary_report(company)
+    result_str = ''
+    battle = company.battles.last
+    result_str << "Для #{company.title} обработано #{battle.reports.count} /battle\n"
+    company.divisions.each do |division|
+      reports = battle.reports.for_division(division)
+      result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
+      Company.all.each do |company|
+        arr = reports.where(broked_company_id: company.id)
+        next if arr.empty?
+        result_str << "На #{company.title} #{arr.count} чел."
+        comrads_percentage = arr.average(:buff)
+        result_str << " с #{comrads_percentage.round(0)}%." if comrads_percentage
+        sum_score = arr.sum(:score)
+        result_str << " заработали #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n"
+      end
+      sum_score = reports.pluck(:score).inject(0, :+)
+      result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
+    end
+    Company.all.each do |company|
+      arr = battle.reports.where(broked_company_id: company.id)
+      comrads_percentage = arr.average(:buff)
+      our_money = arr.sum(:money) * 100 / comrads_percentage
+      total_money = company.battles.last.money
+      result_str << "На #{company.title} нас было ~#{our_money / total_money * 100}% нападающих\n"
+    end
+    sum_score = battle.reports.pluck(:score).inject(0, :+)
+    result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
+    result_str
   end
 
   def current_situation(companies)

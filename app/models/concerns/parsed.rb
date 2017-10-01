@@ -30,7 +30,7 @@ module Parsed
     'не могу понять: ' << message['text']
   end
 
-  def parse_totals(_message)
+  def parse_totals(message)
     text = message['text']
     result_str = ''
     scores = {}
