@@ -101,7 +101,7 @@ module ApplicationHelper
     result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
   end
 
-  def summary_report(company)
+  def company_summary_report(company)
     result_str = ''
     battle = company.battles.last
     result_str << "Для #{company.title} обработано #{battle.reports.count} /battle\n"
@@ -123,9 +123,9 @@ module ApplicationHelper
     Company.all.each do |company|
       arr = battle.reports.where(broked_company_id: company.id)
       comrads_percentage = arr.average(:buff)
-      our_money = arr.sum(:money) * 100 / comrads_percentage
+      our_money = arr.sum(:money) * 100 / comrads_percentage if comrads_percentage
       total_money = company.battles.last.money
-      result_str << "На #{company.title} нас было ~#{our_money / total_money * 100}% нападающих\n"
+      result_str << "На #{company.title} нас было ~#{our_money / total_money * 100}% нападающих\n" if our_money
     end
     sum_score = battle.reports.pluck(:score).inject(0, :+)
     result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
