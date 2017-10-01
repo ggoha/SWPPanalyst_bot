@@ -16,7 +16,7 @@ module ApplicationHelper
 
   def user_link(user)
     if user.username
-      "[#{user.game_name.delete('[]')}](tg://user?id=#{user.telegram_id})"
+      "[#{user.game_name.delete('[]')}](t.me/#{user.username})"
     else
       user.game_name
     end.ljust(20, '_')
