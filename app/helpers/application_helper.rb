@@ -117,9 +117,6 @@ module ApplicationHelper
         result_str << " с #{comrads_percentage.round(0)}%." if comrads_percentage
         sum_score = arr.sum(:score)
         result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
-        sum_money = arr.sum(:money)
-        total_money = brocked_company.battles.last.money
-        result_str << " # {sum_money}💵 (#{(sum_money.to_f / total_money * 100).round(2) }%)\n"
       end
       sum_score = reports.pluck(:score).inject(0, :+)
       result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
