@@ -12,7 +12,7 @@ module ApplicationHelper
     else
       "🚫#{user.endurance}"
     end
-  end
+  end.ljust(4, '-')
 
   def game_name(user)
     user.game_name.delete('[]').ljust(15, '—')
@@ -43,7 +43,7 @@ module ApplicationHelper
   end
 
   def user_compact_report(user)
-    "#{SMILE[user.company_id]}#{user_link(user)} 🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}\n"
+    "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
   def user_report(user)
