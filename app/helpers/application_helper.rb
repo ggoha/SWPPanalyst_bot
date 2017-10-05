@@ -76,7 +76,6 @@ module ApplicationHelper
     result_str = ''
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
-    next if reports.empty?
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
     Company.all.each do |brocked_company|
       arr = reports.where(broked_company_id: brocked_company.id)
@@ -89,6 +88,7 @@ module ApplicationHelper
       sum_score = arr.sum(:score)
       result_str << 'Они принесли' if detailed_view
       result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
+      result_str << "\n"
     end
     result_str << mvp(reports, false) if detailed_view
     sum_score = reports.sum(:score)
