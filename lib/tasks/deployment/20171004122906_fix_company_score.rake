@@ -8,6 +8,7 @@ namespace :after_party do
       company.battles.reverse.each do |battle|
         battle.update_attributes(summary_score: summary_score)
         summary_score -= battle.score
+      end
     end
     # Update task as completed.  If you remove the line below, the task will
     # run with every deploy (or every time you call after_party:run).

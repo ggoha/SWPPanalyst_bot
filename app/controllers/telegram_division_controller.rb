@@ -21,9 +21,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   def message(message)
     type = message_type(message)
     return if type == :parse_undefined
-    private_nessage, public_message = parse(message, type)
+    private_message, public_message = parse(message, type)
     respond_with :message, text: public_message if message['chat']['type'] == 'private'
-    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_nessage
+    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
   end
 
   def summary

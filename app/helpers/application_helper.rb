@@ -105,14 +105,15 @@ module ApplicationHelper
     battle = company.battles.last
     sum_score = battle.reports.sum(:score)
     total_count_people = battle.reports.count * battle.score / sum_score.to_f
-    result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people}\n"
+    result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people.to_i}\n"
     company.divisions.each_with_object(result_str) { |division, str| str << division_report(division) }
     Company.all.each do |brocked_company|
+      arr = battle.reports.where(broked_company_id: brocked_company.id)
       next if arr.empty?
       total_count_people_direction = total_count_people * arr.average(:buff) / 100
       # total_money_direction = arr.sum(:money) * total_count_people_direction / arr.count
       # total_money = brocked_company.battles.last.money
-      result_str << "На #{brocked_company.title} пошло #{arr.count}/#{total_count_people_direction} c #{arr.average(:buff)}%"
+      result_str << "На #{brocked_company.title} пошло #{arr.count}/#{total_count_people_direction.to_i} c #{arr.average(:buff).round(2)}%\n"
     end
     sum_score = battle.reports.sum(:score)
     result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
