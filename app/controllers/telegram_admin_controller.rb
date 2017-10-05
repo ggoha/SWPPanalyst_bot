@@ -1,10 +1,11 @@
 class TelegramAdminController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
-
+  include ApplicationHelper
+  
   context_to_action!
 
   def start(*)
-    respond_with :message, text: 'Admin'
+    respond_with :message, text: t('.content')
   end
 
   def help(*)
@@ -12,10 +13,16 @@ class TelegramAdminController < Telegram::Bot::UpdatesController
   end
 
   def summary
-    if update['message']['chat']['id']==Rails.application.secrets['telegram']['admin']
+    if from_admin_chat?(update['message'])
       respond_with :message, text: company_summary_report(Company.our), parse_mode: 'Markdown'
     else
-      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: 'неправильный канал'
+      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: t('.wrong')
     end
+  end
+
+  private
+
+  def from_admin_chat?(message)
+    message['chat']['id'] == Rails.application.secrets['telegram']['admin']
   end
 end
