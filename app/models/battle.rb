@@ -19,10 +19,6 @@ class Battle < ApplicationRecord
     company.update_attributes(sadness: result ? 0 : [company.sadness + 1, 5].min)
   end
 
-  def add_reports
-    reports << Report.find_by_battle_name(at.strftime('%Y-%M-%D-%H'))
-  end
-
   def losses
     money.positive? ? 0 : -money
   end

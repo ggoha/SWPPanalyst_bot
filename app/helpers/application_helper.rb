@@ -18,16 +18,8 @@ module ApplicationHelper
     end.ljust(4, '-')
   end
 
-  def game_name(user)
-    user.game_name.delete('[]')
-  end
-
   def user_link(user)
-    if user.username
-      "[#{game_name(user)}](t.me/#{user.username})"
-    else
-      game_name(user)
-    end
+    user.username ? "[#{user.game_name.delete('[]')}](t.me/#{user.username})" : user.game_name
   end
 
   def report_stats(reports)
@@ -47,7 +39,8 @@ module ApplicationHelper
   end
 
   def user_compact_report(user)
-    "#{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
+    "#{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}" \
+      "#{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
   def user_report(user)
@@ -56,14 +49,12 @@ module ApplicationHelper
     result << "Администратор\n" if user.admin?
     result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} #{endurance(user)}\n"
     result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
-
     result << "📋#{user.reports.count}(#{report_stats(user.reports)})\n"
     result << "⚔️ #{user.reports.sum(:kill)}(#{report_kill(user.reports)})\n"
     result << "💵#{user.reports.sum(:money)}\n"
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
-    # TODO
-    result << "Обновлен: #{(user.profile_update_at+3.hours).strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
+    result << "Обновлен: #{(user.profile_update_at + 3.hours).strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
     result
   end
 
@@ -73,64 +64,59 @@ module ApplicationHelper
 
   def mvp(reports, finally = true)
     mvp = reports.order(score: :desc).first
-    if mvp && mvp.score > 0
+    if mvp && mvp.score.positive?
       mvp.user.reward_mvp if finally
       mvp_reports(mvp)
+    else
+      ''
     end
   end
 
-  def summary_report(division)
+  def division_report(division, detailed_view = false)
     result_str = ''
-    return 'Это команда для чатов отрядов' unless division
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
+    next if reports.empty?
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
-    Company.all.each do |company|
-      arr = reports.where(broked_company_id: company.id)
+    Company.all.each do |brocked_company|
+      arr = reports.where(broked_company_id: brocked_company.id)
       next if arr.empty?
-      result_str << "На #{company.title} пошло #{arr.count} человек"
+      result_str << "На #{brocked_company.title} #{arr.count} чел."
       comrads_percentage = arr.average(:buff)
-      result_str << " вместе с #{comrads_percentage.round(0)} %" if comrads_percentage
-      result_str << "\nОни унесли #{arr.sum(:money)}💵\n"
-      result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n"
+      result_str << " с #{comrads_percentage.round(0)}%." if comrads_percentage
+      result_str << "\nОни унесли #{arr.sum(:money)}💵\n" if detailed_view
+      result_str << "Они вынесли *#{arr.sum(:kill)}* врагов\n" if detailed_view
       sum_score = arr.sum(:score)
-      result_str << "Они принесли #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
+      result_str << 'Они принесли' if detailed_view
+      result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
     end
-    result_str << mvp(reports, false)
+    result_str << mvp(reports, false) if detailed_view
     sum_score = reports.sum(:score)
-    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
+    result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
+  end
+
+  def summary_report(division)
+    return 'Это команда для чатов отрядов' unless division
+    division_report(division, true)
   end
 
   def company_summary_report(company)
     result_str = ''
     battle = company.battles.last
-    result_str << "Для #{company.title} обработано #{battle.reports.count} /battle\n"
-    company.divisions.each do |division|
-      reports = battle.reports.for_division(division)
-      next if reports.empty?
-      result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
-      Company.all.each do |brocked_company|
-        arr = reports.where(broked_company_id: brocked_company.id)
-        next if arr.empty?
-        result_str << "На #{brocked_company.title} #{arr.count} чел."
-        comrads_percentage = arr.average(:buff)
-        result_str << " с #{comrads_percentage.round(0)}%." if comrads_percentage
-        sum_score = arr.sum(:score)
-        result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
-      end
-      sum_score = reports.pluck(:score).inject(0, :+)
-      result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)\n\n"
-    end
+    sum_score = battle.reports.sum(:score)
+    total_count_people = battle.reports.count * battle.score / sum_score.to_f
+    result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people.to_i}\n"
+    company.divisions.each_with_object(result_str) { |division, str| str << division_report(division) }
     Company.all.each do |brocked_company|
       arr = battle.reports.where(broked_company_id: brocked_company.id)
-      comrads_percentage = arr.average(:buff)
-      our_money = arr.sum(:money) * 100 / comrads_percentage if comrads_percentage
-      total_money = brocked_company.battles.last.money
-      result_str << "На #{brocked_company.title} нас было #{(our_money / total_money * 100).round(2)}% нападающих\n" if our_money
+      next if arr.empty?
+      total_count_people_direction = total_count_people * arr.average(:buff) / 100
+      # total_money_direction = arr.sum(:money) * total_count_people_direction / arr.count
+      # total_money = brocked_company.battles.last.money
+      result_str << "На #{brocked_company.title} пошло #{arr.count}/#{total_count_people_direction.to_i} c #{arr.average(:buff).round(2)}%\n"
     end
-    sum_score = battle.reports.pluck(:score).inject(0, :+)
-    result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2) }%)"
-    result_str
+    sum_score = battle.reports.sum(:score)
+    result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
   end
 
   def current_situation(companies)

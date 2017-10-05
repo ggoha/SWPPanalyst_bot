@@ -20,11 +20,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def message(message)
     type = message_type(message)
-    if type != :parse_undefined
-      private_nessage, public_message = parse(message, type)
-      respond_with :message, text: public_message if message['chat']['type'] == 'private'
-      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_nessage
-    end
+    return if type == :parse_undefined
+    private_message, public_message = parse(message, type)
+    respond_with :message, text: public_message if message['chat']['type'] == 'private'
+    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
   end
 
   def summary
@@ -52,7 +51,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   def divisions
     respond_with :message, text: 'Выбери отдел', reply_markup: {
       inline_keyboard: [@admin.moderated_divisions.map { |d| { text: d.title, callback_data: d.id.to_s } }]
-    }    
+    }
   end
 
   def callback_query(data)
@@ -60,7 +59,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def users
-    respond_with :message, text: users_report(@admin.moderated_divisions), parse_mode: 'Markdown', disable_web_page_preview: true
+    divisions = @admin.moderated_divisions
+    respond_with :message, text: users_report(divisions), parse_mode: 'Markdown', disable_web_page_preview: true
   end
 
   private

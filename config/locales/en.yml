@@ -1,4 +1,26 @@
 en:
+  telegram_admin:
+    start:
+      content:
+        Admin
+    help:
+      content:
+        No help
+    summary:
+      wrong:
+        Неправильный канал
+
+  telegram_parser:
+    start:
+      content:
+        Parser
+    help:
+      content:
+        No help
+    from_report_chat:
+      wrong:
+        Неправильный канал
+
   telegram_division:
     start:
       content: |
@@ -12,7 +34,7 @@ en:
         добавить бота в чат - создает отдел
         скинуть репорт в чат с ботом - отдать боту на обработку
         /hashtags - доступные хештеги
-        /summary - суммирует результаты отдела в воследний взлом
+        /summary - суммирует результаты отдела в последний взлом
         /me - выводит личную статистику спросившего
     parse_bag:
       content: Сообщение о баге принято
