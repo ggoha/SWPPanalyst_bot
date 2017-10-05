@@ -9,7 +9,7 @@ module SwParsed
     result_str = ''
 
     user = User.find_or_create(message)
-    username = text.scan(/(🎩|🤖|⚡️|☂️|📯)(.+)\(/)[0][1]
+    username = text.scan(/(🎩|🤖|⚡️|☂️|📯)(.+) \(/)[0][1]
     if user.admin?
       user = User.find_by_game_name(username)
     elsif username != user.game_name
@@ -40,6 +40,7 @@ module SwParsed
     
     user = User.find_or_create(message)
     params = {}
+    params[:game_name] = message['text'].scan(/\n\n(.*) \(/)[0][0]
     params[:practice] = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
     params[:theory] = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
     params[:cunning] = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
@@ -60,6 +61,7 @@ module SwParsed
     
     user = User.find_or_create(message)
     params = {}
+    params[:game_name] = message['text'].scan(/\n\n.* \(/)[0][0]
     params[:practice] = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     params[:theory] = to_int(message['text'].scan(/🎓(.+)/)[0][0])
     params[:cunning] = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
