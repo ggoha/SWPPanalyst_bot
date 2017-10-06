@@ -11,6 +11,10 @@ class User < ApplicationRecord
     type == 'Admin'
   end
 
+  def move(division_id = nil)
+    update_attributes(division_id: division_id)
+  end
+
   def reward_mvp
     update_attributes(mvp: mvp + 1)
   end
