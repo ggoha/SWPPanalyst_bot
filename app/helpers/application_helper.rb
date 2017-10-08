@@ -30,6 +30,36 @@ module ApplicationHelper
     reports.group(:kill).count.map { |kill, count| "#{KILL[kill]}#{count}" }.join('|')
   end
 
+  def short_achivment_report(achivment, user)
+    if achivmesnt.public
+      user.achivments.include? achivment ? achivment.icon : '❔'
+    else
+      achivment.icon if user.achivments.include? achivment
+    end
+  end
+
+  def achivment_report(achivment, user)
+    if achivmesnt.public?
+      if user.achivments.include? achivment
+        str = "#{achivment.icon}#{achivment.title} "
+        str << "- #{achivment.description}" if achivment.show?
+        str << "#{achivment.percentage}%"
+      else
+        '❔'
+      end
+    else
+      if user.achivments.include? achivment
+        "#{achivment.icon}#{achivment.title} - #{achivment.description} #{achivment.percentage}"
+      end
+    end
+  end
+
+  def achivments_report(user, detailed = true)
+    Achivment.all.each_with_object('') do |achivment, result|
+      result << detailed ? achivment_report(achivment, user) : short_achivment_report(achivment, user)
+    end
+  end
+
   def users_report(divisions)
     divisions.each_with_object('') do |division, result|
       result << "*#{division.title}*\n"
@@ -55,6 +85,7 @@ module ApplicationHelper
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
     result << "Обновлен: #{(user.profile_update_at + 3.hours).strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
+    result << achivments_report(user, false) if user.id == 2
     result
   end
 
@@ -88,7 +119,7 @@ module ApplicationHelper
       sum_score = arr.sum(:score)
       result_str << 'Они принесли' if detailed_view
       result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
-      result_str << "\n"
+      result_str << "\n" if detailed_view
     end
     result_str << mvp(reports, false) if detailed_view
     sum_score = reports.sum(:score)

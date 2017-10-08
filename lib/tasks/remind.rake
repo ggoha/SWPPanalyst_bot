@@ -4,7 +4,7 @@ include ApplicationHelper
 def remind_task
   bot = Telegram.bots[:division]
   Division.where(autopin: true).each do |d|
-    message = bot.send_message chat_id: d.telegram_id, text: '10 минут до взлома'
+    message = bot.send_message chat_id: d.telegram_id, text: d.message
     bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
   end
 end
@@ -40,6 +40,14 @@ def update_profile_task
   end
 end
 
+def after_day_task
+  bot = Telegram.bots[:division]
+  Division.where(autopin_nighty: true).each do |d|
+    message = bot.send_message chat_id: d.telegram_id, text: d.nighty_message
+    bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+  end
+end
+
 namespace :group do
   desc 'Все сообщения перед битвой'
   task before_battle: :environment do
@@ -57,5 +65,10 @@ namespace :group do
   desc 'Напоминание о обновлении профилей'
   task update_profile: :environment do
     update_profile_task
+  end
+
+  desc 'Напоминание о конце дня'
+  task after_day: :environment do
+    after_day_task
   end
 end

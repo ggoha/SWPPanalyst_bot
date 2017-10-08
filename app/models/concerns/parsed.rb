@@ -2,6 +2,8 @@ module Parsed
   extend ActiveSupport::Concern
   include SwParsed
 
+  NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }.freeze
+
   def message_type(message)
     return :parse_invite if message['new_chat_member'].present?
     return :parse_undefined unless message['text']
@@ -36,7 +38,7 @@ module Parsed
       scores[NAME[name.strip]] = to_int(score)
     end
     Company.all.each_with_index do |company, i|
-      result_str << "#{company.title}: #{scores[i]} - #{company.scores}\n"
+      result_str << "#{company.title}: #{scores[i]} - #{company.score}\n"
     end
     result_str
   end
@@ -86,7 +88,7 @@ module Parsed
     # Условное название
     name = name(message)
     Company.all.each_with_index do |company, i|
-      battle = company.battles.create(score: scores[i], name: name, percent_score: percent_scores[i], result: results[i], money: monies[i], at: Time.at(message['date']))
+      battle = company.battles.create(raw: message['text'], score: scores[i], name: name, percent_score: percent_scores[i], result: results[i], money: monies[i], at: Time.at(message['date']))
       result_str << battle.inspect
     end
     result_str << parse_stock(message)

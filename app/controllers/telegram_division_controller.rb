@@ -1,12 +1,15 @@
+require 'digest/md5'
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include ApplicationHelper
   include Parsed
 
   before_action :set_division, only: [:summary, :users]
-  before_action :set_user, only: [:me]
+  before_action :set_user, only: [:me, :give, :message]
   before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message]
   before_action :find_division, only: [:autopin, :pin_message]
+
+  before_action :check_achivment, only: [:message]
 
   context_to_action!
 
@@ -22,8 +25,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     type = message_type(message)
     return if type == :parse_undefined
     private_message, public_message = parse(message, type)
-    respond_with :message, text: public_message if message['chat']['type'] == 'private'
+    #respond_with :message, text: public_message if message['chat']['type'] == 'private'
     bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
+    respond_with :message, text: public_message if public_message
   end
 
   def summary
@@ -34,8 +38,16 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: t('.content')
   end
 
+  def give(value)
+    @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest @user.game_name == value
+  end
+
   def me
     respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
+  end
+
+  def achivments
+    respond_with :message, text: achivments_report(@user, true)
   end
 
   def autopin(value)
@@ -97,6 +109,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   private
+
+  def check_achivment
+    @user.check_achivment(update['message']) if @user && @user.id == 2
+  end
 
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])

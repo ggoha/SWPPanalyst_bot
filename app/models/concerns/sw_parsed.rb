@@ -4,15 +4,42 @@ module SwParsed
   NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }.freeze
   NAME_SMILE = { '📯Pied Piper' => 1, '🤖Hooli' => 2, '⚡️Stark Ind.' => 3, '☂️Umbrella' => 4, '🎩Wayne Ent.' => 5 }.freeze
 
+  def endurances(message)
+    (message['text'].scan(/🔋Осталось выносливости: (\d+)%/)[0][0]).to_i
+  end
+
+  def kill(message)
+    COUNT[message['text'].scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
+  end
+
+  def star(message)
+    (message['text'].scan(/(.+)\/cool/)[0][0].length - 1) / 2
+  end
+
+  def money(message)
+    message['text'].scan(/Деньги: (.+)\n/)[0] ? message['text'].scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i : 0
+  end
+
+  def score(message)
+    message['text'].scan(/Твой вклад: (.+)\n/)[0] ? message['text'].scan(/Твой вклад: (.+)\n/)[0][0].to_i : 0
+  end
+
+  def levels(message)
+    return message['text'].scan(/🎚(\d+) \(/)[0][0] if message['text'].scan(/🎚(\d+) \(/)[0]
+    return message['text'].scan(/Уровень: (\d+)/)[0][0] if message['text'].scan(/Уровень: (\d+)/)[0]
+  end
+
+  def enemies(message)
+    message['text'].scan(/(.+)🔨/)
+  end
+
   def parse_report(message)
     text = message['text']
     result_str = ''
 
     user = User.find_or_create(message)
     username = text.scan(/(🎩|🤖|⚡️|☂️|📯)(.+) \(/)[0][1]
-    if user.admin?
-      user = User.find_by_game_name(username)
-    elsif username != user.game_name
+    if !user || (user && username != user.game_name)
       return ['Репорт не обработан, пользователь не совпадает', 'Репорт не обработан, пользователь не совпадает']
     end
     user.division.update_attributes(company_id: user.company_id) if user.division.company_id.blank?
@@ -23,10 +50,10 @@ module SwParsed
       return ['Репорт не обработан, необходимо добавить компанию, которую ты вламывал', 'Репорт не обработан, необходимо добавить компанию, которую ты вламывал']
     end
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
-    kill = COUNT[text.scan(/(Тебе не удалось|Ты вынес|Ты выпилил сразу|Тебе удалось выбить сразу|Ты уронил аж) ([а-яё]+)/)[0][1]]
-    money = text.scan(/Деньги: (.+)\n/)[0] ? text.scan(/Деньги: (.+)\n/)[0][0].delete('$').to_i : 0
-    score = text.scan(/Деньги: (.+)\n/)[0] ? text.scan(/Твой вклад: (.+)\n/)[0][0].to_i : 0
-    endurance = text.scan(/🔋Осталось выносливости: (\d+)%/)[0][0]
+    kill = kill(message)
+    money = money(message)
+    score = score(message)
+    endurance = endurance(message)
     buff = buff(message, user)
     report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
     user.update_endurance(endurance)
@@ -40,15 +67,15 @@ module SwParsed
     
     user = User.find_or_create(message)
     params = {}
-    params[:game_name] = message['text'].scan(/\n\n(.*) \(/)[0][0]
+    params[:game_name] = message['text'].scan(/\n\n💰?(.*) \(/)[0][0]
     params[:practice] = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
     params[:theory] = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
     params[:cunning] = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
     params[:wisdom] = message['text'].scan(/Мудрость:.+\((\d+)\)/)[0][0]
-    params[:stars] = (message['text'].scan(/Крутизна: (.+)\/cool/)[0][0].length - 1) / 2
+    params[:stars] = star(message)
     params[:level] = message['text'].scan(/Уровень: (\d+)/)[0][0]
     params[:experience] = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
-    endurance = message['text'].scan(/Выносливость: (\d+)%/)[0][0]
+    endurance = endurance(message)
     user.update_profile(params)
     user.update_endurance(endurance)
     result_str << user.inspect
@@ -61,12 +88,12 @@ module SwParsed
     
     user = User.find_or_create(message)
     params = {}
-    params[:game_name] = message['text'].scan(/\n\n.* \(/)[0][0]
+    params[:game_name] = message['text'].scan(/\n\n💰?.* \(/)[0][0]
     params[:practice] = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     params[:theory] = to_int(message['text'].scan(/🎓(.+)/)[0][0])
     params[:cunning] = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
     params[:wisdom] = to_int(message['text'].scan(/🐢(.+)/)[0][0])
-    params[:stars] = (message['text'].scan(/(.+)\/cool/)[0][0].length - 1) / 2
+    params[:stars] = star(message)
     params[:level] = message['text'].scan(/🎚(\d+) \(/)[0][0]
     params[:experience] = to_int(message['text'].scan(/\((.+) из/)[0][0])
     endurance = message['text'].scan(/🔋(\d+)%/)[0][0]

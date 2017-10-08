@@ -6,6 +6,9 @@ class Battle < ApplicationRecord
 
   validates_uniqueness_of :name, scope: :company_id
 
+  scope :ultima, -> { where(company_id: Company.our).last }
+  scope :penultima, -> { where(company_id: Company.our).last(2)[0] }
+
   scope :week, -> { where(at: (Time.now - 1.week)..Time.now) }
   scope :day, -> { where(at: (Time.now - 1.day)..Time.now) }
   default_scope { order(:at) }
