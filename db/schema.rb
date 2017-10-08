@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170927220720) do
+ActiveRecord::Schema.define(version: 20171006203306) do
+
+  create_table "achivments", force: :cascade do |t|
+    t.string  "title"
+    t.string  "icon"
+    t.string  "description"
+    t.float   "percentage",  default: 0.0
+    t.boolean "public",      default: true
+  end
 
   create_table "admin_divisions", force: :cascade do |t|
     t.integer "division_id"
@@ -26,6 +34,8 @@ ActiveRecord::Schema.define(version: 20170927220720) do
     t.integer  "money"
     t.float    "percent_score"
     t.string   "name"
+    t.integer  "current_sadness"
+    t.text     "raw"
   end
 
   create_table "companies", force: :cascade do |t|
@@ -35,11 +45,13 @@ ActiveRecord::Schema.define(version: 20170927220720) do
   end
 
   create_table "divisions", force: :cascade do |t|
-    t.string  "title",                                                                                 null: false
+    t.string  "title",                                                                                      null: false
     t.string  "telegram_id"
     t.integer "company_id"
-    t.boolean "autopin",     default: false
-    t.string  "message",     default: "15 минут до взлома, не забудьте поесть и слить деньги в акции"
+    t.boolean "autopin",        default: false
+    t.string  "message",        default: "15 минут до взлома, не забудьте поесть и слить деньги в акции"
+    t.boolean "autopin_nighty", default: false
+    t.string  "nighty_message", default: "Проверьте автосон, ловите биржевиков, приходите завтра на взлом"
   end
 
   create_table "reports", force: :cascade do |t|
@@ -64,8 +76,13 @@ ActiveRecord::Schema.define(version: 20170927220720) do
     t.string "version", null: false
   end
 
+  create_table "user_achivments", force: :cascade do |t|
+    t.integer "achivment_id"
+    t.integer "user_id"
+  end
+
   create_table "users", force: :cascade do |t|
-    t.string   "game_name",                            null: false
+    t.string   "game_name",                                           null: false
     t.string   "telegram_id"
     t.integer  "company_id"
     t.string   "username"
@@ -83,6 +100,7 @@ ActiveRecord::Schema.define(version: 20170927220720) do
     t.integer  "mvp",                 default: 0
     t.datetime "profile_update_at"
     t.datetime "endurance_update_at"
+    t.datetime "last_remind_at",      default: '2017-10-08 15:57:02'
   end
 
 end

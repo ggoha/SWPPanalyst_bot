@@ -1,7 +1,12 @@
 class User < ApplicationRecord
+  include Achivmed
+
   has_many :reports
   belongs_to :company
   belongs_to :division
+  has_many :achivments, through: :user_achivments
+  has_many :user_achivments
+
   validates_uniqueness_of :telegram_id
   before_create :update_last_remind_at
 
@@ -11,8 +16,14 @@ class User < ApplicationRecord
     type == 'Admin'
   end
 
+  def move(division_id = nil)
+    update_attributes(division_id: division_id)
+  end
+
   def reward_mvp
     update_attributes(mvp: mvp + 1)
+    achivment = Achivment.find_by_title('MVP')
+    add_achivment(achivment) unless achivments.include? achivment
   end
 
   def update_endurance(endurance)
@@ -33,6 +44,7 @@ class User < ApplicationRecord
                           company_id: SMILE[message['text'][0]],
                           username: message['from']['username'],
                           game_name: message['text'].scan(/📯(.+) \(/)[0][0])
+    Achivment.all.each { |a| a.update_percentage }
   end
 
   def self.find_or_create(message)
