@@ -34,29 +34,31 @@ module ApplicationHelper
     if achivmesnt.public
       user.achivments.include? achivment ? achivment.icon : '❔'
     else
-      achivment.icon if user.achivments.include? achivment
+      user.achivments.include? achivment ? achivment.icon : ''
     end
   end
 
   def achivment_report(achivment, user)
-    if achivmesnt.public?
+    if achivment.public?
       if user.achivments.include? achivment
         str = "#{achivment.icon}#{achivment.title} "
         str << "- #{achivment.description}" if achivment.show?
-        str << "#{achivment.percentage}%"
+        str << "#{achivment.percentage.round(2)}%\n"
       else
-        '❔'
+        "❔\n"
       end
     else
       if user.achivments.include? achivment
-        "#{achivment.icon}#{achivment.title} - #{achivment.description} #{achivment.percentage}"
+        "#{achivment.icon}#{achivment.title} - #{achivment.description} #{achivment.percentage.round(2)}\n"
+      else
+        ''
       end
     end
   end
 
   def achivments_report(user, detailed = true)
     Achivment.all.each_with_object('') do |achivment, result|
-      result << detailed ? achivment_report(achivment, user) : short_achivment_report(achivment, user)
+      result << (detailed ? achivment_report(achivment, user) : short_achivment_report(achivment, user))
     end
   end
 
