@@ -5,7 +5,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Parsed
 
   before_action :set_division, only: [:summary, :users]
-  before_action :set_user, only: [:me, :give, :message]
+  before_action :set_user, only: [:me, :give, :message, :achivments]
   before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message]
   before_action :find_division, only: [:autopin, :pin_message]
 
