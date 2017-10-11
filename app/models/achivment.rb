@@ -5,7 +5,7 @@ class Achivment < ApplicationRecord
   scope :no_obtain_for, ->(user) { Achivment.where(public: true) - user.achivments }
 
   def update_percentage
-    update_attributes(percentage: users.count.to_f / User.count)
+    update_attributes(percentage: 100.0 * users.count / User.count)
   end
 
   def show?

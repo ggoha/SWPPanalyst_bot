@@ -6,8 +6,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   before_action :set_division, only: [:summary, :users]
   before_action :set_user, only: [:me, :give, :message, :achivments]
-  before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message]
-  before_action :find_division, only: [:autopin, :pin_message]
+  before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
+  before_action :find_division, only: [:autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
 
   before_action :check_achivment, only: [:message]
 
@@ -25,28 +25,27 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     type = message_type(message)
     return if type == :parse_undefined
     private_message, public_message = parse(message, type)
-    #respond_with :message, text: public_message if message['chat']['type'] == 'private'
     bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
     respond_with :message, text: public_message if public_message
   end
 
-  def summary
+  def summary(*)
     respond_with :message, text: summary_report(@division), parse_mode: 'Markdown'
   end
 
-  def hashtags
+  def hashtags(*)
     respond_with :message, text: t('.content')
   end
 
-  def give(value)
-    @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest @user.game_name == value
+  def give(*value)
+    @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest @user.game_name == value[0]
   end
 
-  def me
+  def me(*)
     respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
   end
 
-  def achivments
+  def achivments(*)
     respond_with :message, text: achivments_report(@user, true)
   end
 
@@ -80,7 +79,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     session[:division] = data
   end
 
-  def users
+  def users(*)
     divisions = @admin.moderated_divisions
     respond_with :message, text: users_report(divisions), parse_mode: 'Markdown', disable_web_page_preview: true
   end
@@ -97,7 +96,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: "#{user.game_name} переведен в #{user.division.title}"
   end
 
-  def update_admin
+  def update_admin(*)
     admins = bot.get_chat_administrators chat_id: @division.telegram_id
     admins.each do |admin|
       user = User.find_by_telegram_id(admin['user']['id'])
@@ -111,7 +110,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   private
 
   def check_achivment
-    @user.check_achivment(update['message']) if @user && @user.id == 2
+    @user.check_achivment(update['message']) if @user
   end
 
   def set_division
