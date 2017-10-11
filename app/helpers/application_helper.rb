@@ -18,8 +18,12 @@ module ApplicationHelper
     end.ljust(4, '-')
   end
 
+  def game_name(user)
+    user.game_name.delete('[_]')
+  end
+
   def user_link(user)
-    user.username ? "[#{user.game_name.delete('[]')}](t.me/#{user.username})" : user.game_name
+    user.username ? "[#{game_name(user)}](t.me/#{user.username})" : game_name(user)
   end
 
   def report_stats(reports)
@@ -59,7 +63,7 @@ module ApplicationHelper
   def achivments_report(user, detailed = true)
     Achivment.all.each_with_object('') do |achivment, result|
       result << (detailed ? achivment_report(achivment, user) : short_achivment_report(achivment, user))
-    end
+    end << "\n"
   end
 
   def users_report(divisions)
@@ -77,7 +81,7 @@ module ApplicationHelper
 
   def user_report(user)
     result = ''
-    result << "#{SMILE[user.company_id]}*#{user.game_name}* #{user.division.title}\n"
+    result << "#{SMILE[user.company_id]}*#{game_name(user)}* #{user.division.title}\n"
     result << "Администратор\n" if user.admin?
     result << "🔨#{user.practice} 🎓#{user.theory} 🐿#{user.cunning} 🐢#{user.wisdom} #{endurance(user)}\n"
     result << "🎚#{user.level} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness}\n\n"
@@ -92,7 +96,7 @@ module ApplicationHelper
   end
 
   def mvp_reports(mvp)
-    "🏅 MVP - #{mvp.user.game_name} : #{mvp.score}\n"
+    "🏅 MVP - #{game_name(mvp.user)} : #{mvp.score}\n"
   end
 
   def mvp(reports, finally = true)
@@ -137,6 +141,7 @@ module ApplicationHelper
     result_str = ''
     battle = company.battles.last
     sum_score = battle.reports.sum(:score)
+    return if sum_score == 0
     total_count_people = battle.reports.count * battle.score / sum_score.to_f
     result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people.to_i}\n"
     company.divisions.each_with_object(result_str) { |division, str| str << division_report(division) }

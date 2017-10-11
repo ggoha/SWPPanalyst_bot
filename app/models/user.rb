@@ -39,12 +39,13 @@ class User < ApplicationRecord
   end
 
   def self.create_from(message)
-    Division.find_by_telegram_id(message['chat']['id'])
-            .users.create(telegram_id: message['from']['id'],
+    d = Division.find_by(message['chat']['id'])
+    user = d.users.create(telegram_id: message['from']['id'],
                           company_id: SMILE[message['text'][0]],
                           username: message['from']['username'],
                           game_name: message['text'].scan(/📯(.+) \(/)[0][0])
     Achivment.all.each { |a| a.update_percentage }
+    user
   end
 
   def self.find_or_create(message)
