@@ -38,14 +38,17 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def give(*value)
+    throw :abort unless @user
     @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest @user.game_name == value[0]
   end
 
   def me(*)
+    throw :abort unless @user
     respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
   end
 
   def achivments(*)
+    throw :abort unless @user
     respond_with :message, text: achivments_report(@user, true)
   end
 
