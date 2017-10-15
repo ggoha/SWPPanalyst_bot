@@ -8,5 +8,5 @@ every '5 19 * * *' do
   rake 'group:after_day'
 end
 every '0 12 * * *' do
-  rake 'group:profile_update'
+  rake 'group:update_profile'
 end
