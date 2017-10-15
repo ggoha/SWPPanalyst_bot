@@ -3,11 +3,11 @@ module ApplicationHelper
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
   def id(user)
-    user.id.to_s.ljust(3, '/')
+    user.id.to_s.ljust(3, '#')
   end
 
   def level(user)
-    "🎚#{user.level}".ljust(3, '/')
+    "🎚#{user.level}".ljust(3, '#')
   end
 
   def stars(user)
@@ -15,7 +15,7 @@ module ApplicationHelper
   end
 
   def last_update(user)
-    user.profile_update_at : user.profile_update_at.strftime("%H-%d-%m") : '//-//-//'
+    user.profile_update_at ? user.profile_update_at.strftime("%H-%d") : '##-##'
   end
 
   def endurance(user)

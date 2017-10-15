@@ -74,7 +74,7 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
-    if user.update_profile_at && user.update_profile_at > message['forward_from']['forward_date']
+    if user.update_profile_at && user.update_profile_at > message['forward_date']
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
@@ -99,7 +99,7 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
-    if user.update_profile_at && user.update_profile_at > message['forward_from']['forward_date']
+    if user.update_profile_at && user.update_profile_at > message['forward_date']
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
