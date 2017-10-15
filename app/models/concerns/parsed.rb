@@ -57,8 +57,13 @@ module Parsed
 
   def parse_invite(message)
     return unless message['new_chat_member']['id'] == Rails.application.secrets['telegram']['bots']['division']['id']
+    user = User.find_by_telegram_id(message['from']['id'])
+    unless user
+      respond_with :message, text: 'Отдел не созданн, для создания отдела вам предварительно надо отправить профиль боту в личку'
+      return
+    end
     result_str = ''
-    division = Division.find_or_create(message)
+    division = Division.find_or_create(message, user)
     result_str << division.inspect
     result_str
   end

@@ -10,15 +10,15 @@ class Division < ApplicationRecord
     admins.include?(user)
   end
 
-  def self.create_from(message)
-    create(telegram_id: message['chat']['id'], title: message['chat']['title'])
+  def self.create_from(message, user)
+    create(telegram_id: message['chat']['id'], title: message['chat']['title'], company_id: user.company_id)
   end
 
   def self.find_or_default(message)
     find_by_telegram_id(message['chat']['id']) ? find_by_telegram_id(message['chat']['id']) : Company.findby(message).default_division
   end
 
-  def self.find_or_create(message)
+  def self.find_or_create(message, user)
     find_by_telegram_id(message['chat']['id']) ? find_by_telegram_id(message['chat']['id']) : create_from(message)
   end
 end
