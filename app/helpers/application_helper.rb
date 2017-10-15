@@ -148,10 +148,14 @@ module ApplicationHelper
     Company.all.each do |brocked_company|
       arr = battle.reports.where(broked_company_id: brocked_company.id)
       next if arr.empty?
-      total_count_people_direction = total_count_people * arr.average(:buff) / 100
-      # total_money_direction = arr.sum(:money) * total_count_people_direction / arr.count
-      # total_money = brocked_company.battles.last.money
-      result_str << "На #{brocked_company.title} пошло #{arr.count}/#{total_count_people_direction.to_i} c #{arr.average(:buff).round(2)}%\n"
+      if arr.average(:buff)
+        total_count_people_direction = total_count_people * arr.average(:buff) / 100
+        # total_money_direction = arr.sum(:money) * total_count_people_direction / arr.count
+        # total_money = brocked_company.battles.last.money
+        result_str << "На #{brocked_company.title} пошло #{arr.count}/#{total_count_people_direction.to_i} c #{arr.average(:buff).round(2)}%\n"
+      else
+        result_str << "На #{brocked_company.title} пошло #{arr.count}/NaN c #NaN%\n"
+      end
     end
     sum_score = battle.reports.sum(:score)
     result_str << "\nВсего обработано #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
