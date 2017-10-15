@@ -1,4 +1,4 @@
-module SwParsed
+module SwParsed 
   extend ActiveSupport::Concern
   COUNT = { 'никого' => 0, 'одного' => 1, 'двух' => 2, 'трёх' => 3, 'четырёх' => 4 }.freeze
   NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }.freeze
@@ -74,7 +74,7 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
-    if user.update_profile_at && user.update_profile_at > message['forward_date']
+    if user.profile_update_at && user.profile_update_at > message['forward_date']
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
@@ -99,7 +99,7 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
-    if user.update_profile_at && user.update_profile_at > message['forward_date']
+    if user.profile_update_at && user.profile_update_at > message['forward_date']
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
