@@ -6,7 +6,7 @@ namespace :after_party do
       company.update_attributes(score: scores[i])
       summary_score = scores[i]
       company.battles.reverse.each do |battle|
-        battle.update_attributes(summary_score: summary_score)
+        battle.update_attribute(summary_score: summary_score)
         summary_score -= battle.score
       end
     end

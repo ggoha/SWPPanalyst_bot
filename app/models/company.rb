@@ -6,8 +6,8 @@ class Company < ApplicationRecord
 
   SMILE = { '📯' => 1, '🤖' => 2, '⚡️' => 3, '☂️' => 4, '🎩' => 5 }.freeze
 
-  def self.find_by(message)
-    Company.find(SMILE[message.scan(/🎩|🤖|⚡️|☂️|📯/)[0]])
+  def self.findby(message)
+    Company.find(SMILE[message['text'].scan(/🎩|🤖|⚡️|☂️|📯/)[0]])
   end
 
   def self.our

@@ -14,8 +14,8 @@ class Division < ApplicationRecord
     create(telegram_id: message['chat']['id'], title: message['chat']['title'])
   end
 
-  def self.find_by(message)
-    find_by_telegram_id(message['chat']['id']) ? find_by_telegram_id(message['chat']['id']) : Company.find_by(message).default_division
+  def self.find_or_default(message)
+    find_by_telegram_id(message['chat']['id']) ? find_by_telegram_id(message['chat']['id']) : Company.findby(message).default_division
   end
 
   def self.find_or_create(message)

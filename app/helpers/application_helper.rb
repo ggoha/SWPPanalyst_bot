@@ -36,9 +36,9 @@ module ApplicationHelper
 
   def short_achivment_report(achivment, user)
     if achivmesnt.public
-      user.achivments.include? achivment ? achivment.icon : '❔'
+      user.achivments.include?(achivment) ? achivment.icon : '❔'
     else
-      user.achivments.include? achivment ? achivment.icon : ''
+      user.achivments.include?(achivment) ? achivment.icon : ''
     end
   end
 
@@ -53,7 +53,7 @@ module ApplicationHelper
       end
     else
       if user.achivments.include? achivment
-        "#{achivment.icon}#{achivment.title} - #{achivment.description} #{achivment.percentage.round(2)}\n"
+        "#{achivment.icon}#{achivment.title} - #{achivment.description} #{achivment.percentage.round(2)}%\n"
       else
         ''
       end
@@ -90,8 +90,8 @@ module ApplicationHelper
     result << "💵#{user.reports.sum(:money)}\n"
     result << "🏆#{user.reports.sum(:score)}\n"
     result << "🏅#{user.mvp}\n"
-    result << "Обновлен: #{(user.profile_update_at + 3.hours).strftime('%H:%M %d-%m-%y')}" if user.profile_update_at
-    result << achivments_report(user, false) if user.id == 2
+    result << "Обновлен: #{(user.profile_update_at + 3.hours).strftime('%H:%M %d-%m-%y')}\n" if user.profile_update_at
+    result << achivments_report(user, false)
     result
   end
 
