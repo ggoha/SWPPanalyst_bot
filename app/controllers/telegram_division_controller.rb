@@ -89,12 +89,14 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def move_out(id)
     user = User.find(id)
+    return unless @admin.moderated_divisions.include? user.division
     respond_with :message, text: "#{user.game_name} выгнан из #{user.division.title}"
     user.move
   end
 
   def move(id)
     user = User.find(id)
+    return unless @admin.moderated_divisions.include? user.division
     user.move(session[:division])
     respond_with :message, text: "#{user.game_name} переведен в #{user.division.title}"
   end
