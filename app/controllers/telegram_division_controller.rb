@@ -115,14 +115,18 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])
+    throw :abort unless @division
   end
 
   def find_division
+    throw :abort unless session[:division]
     @division = Division.find(session[:division])
+    throw :abort unless @division
   end
 
   def set_user
     @user = User.find_by_telegram_id(update['message']['from']['id'])
+    logger.error("#{update['message']['from']['username']}") unless @user
   end
 
   def set_admin

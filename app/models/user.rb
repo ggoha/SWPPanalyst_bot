@@ -17,7 +17,11 @@ class User < ApplicationRecord
   end
 
   def move(division_id = nil)
-    update_attributes(division_id: division_id)
+    if division_id
+      update_attributes(division_id: division_id)
+    else
+      update_attributes(division_id: company.default_division.id)
+    end
   end
 
   def reward_mvp
@@ -39,9 +43,9 @@ class User < ApplicationRecord
   end
 
   def self.create_from(message)
-    d = Division.find_by(message['chat']['id'])
+    d = Division.find_or_default(message)
     user = d.users.create(telegram_id: message['from']['id'],
-                          company_id: SMILE[message['text'][0]],
+                          company_id: d.company_id,
                           username: message['from']['username'],
                           game_name: message['text'].scan(/📯(.+) \(/)[0][0])
     Achivment.all.each { |a| a.update_percentage }

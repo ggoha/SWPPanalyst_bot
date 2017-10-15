@@ -7,7 +7,7 @@ class TelegramViewController < Telegram::Bot::UpdatesController
   TYPE = {
     'Акции' => :generate_stoks_line,
     'Деньги' => :generate_moneys_area,
-    # 'Рейтинг' => :generate_points_line,
+    'Рейтинг' => :generate_points_line,
     'Очки%' => :generate_percent_points_bar,
     'Очки' => :generate_points_bar
   }.freeze

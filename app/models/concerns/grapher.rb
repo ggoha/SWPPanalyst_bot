@@ -61,7 +61,7 @@ module Grapher
   end
 
   def generate_points_line(filter)
-    g = ::Gruff::Line.new
+    g = ::Gruff::Line.new(1600)
     g.title = 'Рейтинг компаний'
     g.hide_dots = true
     Company.all.each do |company|
