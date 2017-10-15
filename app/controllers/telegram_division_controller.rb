@@ -39,7 +39,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def give(*value)
     return unless @user
-    @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest @user.game_name == value[0]
+    @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest(@user.game_name) == value[0]
   end
 
   def me(*)
