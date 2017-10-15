@@ -35,7 +35,7 @@ module ApplicationHelper
   end
 
   def short_achivment_report(achivment, user)
-    if achivmesnt.public
+    if achivment.public
       user.achivments.include?(achivment) ? achivment.icon : '❔'
     else
       user.achivments.include?(achivment) ? achivment.icon : ''
