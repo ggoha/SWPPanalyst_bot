@@ -47,7 +47,7 @@ class User < ApplicationRecord
     user = d.users.create(telegram_id: message['from']['id'],
                           company_id: d.company_id,
                           username: message['from']['username'],
-                          game_name: message['text'].scan(/(🎩|🤖|⚡️|☂️|📯)(.+) \(/)[0][1])
+                          game_name: message['text'].scan(/(🎩|🤖|⚡️|☂️|📯)?(.+) \(/)[0][1])
     Achivment.all.each { |a| a.update_percentage }
     user
   end
