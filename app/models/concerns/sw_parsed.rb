@@ -4,6 +4,10 @@ module SwParsed
   NAME = { 'Pied Piper' => 0, 'Hooli' => 1, 'Stark Ind.' => 2, 'Umbrella' => 3, 'Wayne Ent.' => 4 }.freeze
   NAME_SMILE = { '📯Pied Piper' => 1, '🤖Hooli' => 2, '⚡️Stark Ind.' => 3, '☂️Umbrella' => 4, '🎩Wayne Ent.' => 5 }.freeze
 
+  def motivations(message)
+    message['text'].scan(/из (\d+) \(/)[0][0].to_i
+  end
+
   def endurances(message)
     message['text'].scan(/🔋Осталось выносливости: (\d+)%/)[0] ? (message['text'].scan(/🔋Осталось выносливости: (\d+)%/)[0][0]).to_i : 0
   end
@@ -70,6 +74,9 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
+    if user.update_profile_at && user.update_profile_at > message['forward_from']['forward_date']
+      return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
+    end
     params = {}
     params[:game_name] = message['text'].scan(/\n\n💰?(.*) \(/)[0][0]
     params[:practice] = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
@@ -79,7 +86,8 @@ module SwParsed
     params[:stars] = star1(message)
     params[:level] = message['text'].scan(/Уровень: (\d+)/)[0][0]
     params[:experience] = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
-    endurance = endurances(message)
+    params[:motivation] = motivations(message)
+    endurance = message['text'].scan(/Выносливость: (\d+)%/)[0] ? message['text'].scan(/Выносливость: (\d+)%/)[0][0] : 0
     user.update_profile(params)
     user.update_endurance(endurance)
     result_str << user.inspect
@@ -91,6 +99,9 @@ module SwParsed
     result_str = ''
     
     user = User.find_or_create(message)
+    if user.update_profile_at && user.update_profile_at > message['forward_from']['forward_date']
+      return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
+    end
     params = {}
     params[:game_name] = message['text'].scan(/\n\n💰?(.*) \(/)[0][0]
     params[:practice] = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
@@ -100,6 +111,7 @@ module SwParsed
     params[:stars] = star(message)
     params[:level] = message['text'].scan(/🎚(\d+) \(/)[0][0]
     params[:experience] = to_int(message['text'].scan(/\((.+) из/)[0][0])
+    params[:motivation] = motivations(message)
     endurance = message['text'].scan(/🔋(\d+)%/)[0] ? message['text'].scan(/🔋(\d+)%/)[0][0] : 0
     user.update_profile(params)
     user.update_endurance(endurance)
