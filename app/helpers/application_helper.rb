@@ -85,7 +85,7 @@ module ApplicationHelper
 
   def user_compact_report(user)
     "#{idv(user)} #{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}" \
-      "#last_update(user) #{SMILE[user.company_id]}#{user_link(user)}\n"
+      "#{last_update(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
   def user_report(user)
