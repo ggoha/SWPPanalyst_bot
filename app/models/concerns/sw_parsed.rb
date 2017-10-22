@@ -54,6 +54,10 @@ module SwParsed
     battle_name = battle_date(message)
     battle_name2 = yesterdays_battle_date(message)
     battle_id = (user.company.battles.find_by_name(battle_name) || user.company.battles.find_by_name(battle_name2)).id
+    # battle = user.company.battles.last
+    # if message['text'].scan(/на (\d+) часов/)[0][0] != (battle.at + 3.hours).hour
+    #   return ['Репорт не обработан битва не найдена', 'Репорт не обработан битва не найдена']
+    # end
     if text.scan(/(Ты защищал|Ты взламывал) (.+)/).empty?
       return ['Репорт не обработан, необходимо добавить компанию, которую ты вламывал', 'Репорт не обработан, необходимо добавить компанию, которую ты вламывал']
     end
@@ -120,10 +124,10 @@ module SwParsed
   end
 
   def parse_endurance(message)
-    text = message['text']
     result_str = ''
 
-    user = User.find_or_create(message)
+    user = User.find_by_telegram_id(message['from']['id'])
+    return ['Пользователь не найден', 'Пользователь не найден'] unless user
     endurance = message['text'].scan(/🔋Выносливость: (\d+)%/)[0][0]
     user.update_endurance(endurance)
     result_str << user.inspect
