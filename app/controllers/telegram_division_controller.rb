@@ -84,7 +84,9 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def users(*)
     divisions = @admin.moderated_divisions
-    respond_with :message, text: users_report(divisions), parse_mode: 'Markdown', disable_web_page_preview: true
+    users_report(divisions).each do |report|
+      respond_with :message, text: report, parse_mode: 'Markdown', disable_web_page_preview: true
+    end
   end
 
   def move_out(id)

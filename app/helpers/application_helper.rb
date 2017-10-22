@@ -2,7 +2,7 @@ module ApplicationHelper
   SMILE = { 1 => '📯', 2 => '🤖', 3 => '⚡️', 4 => '☂️', 5 => '🎩' }.freeze
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
-  def id(user)
+  def idv(user)
     user.id.to_s.ljust(3, '#')
   end
 
@@ -75,15 +75,16 @@ module ApplicationHelper
   end
 
   def users_report(divisions)
-    divisions.each_with_object('') do |division, result|
-      result << "*#{division.title}*\n"
-      division.users.each_with_object(result) { |user, str| str << user_compact_report(user) }
-      result << "\n"
+    divisions.each_with_object([]) do |division, result|
+      result_str = "*#{division.title}*\n"
+      division.users.each_with_object(result_str) { |user, str| str << user_compact_report(user) }
+      result_str << "\n"
+      result << result_str
     end
   end
 
   def user_compact_report(user)
-    "#{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}" \
+    "#{idv(user)} #{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}" \
       "#last_update(user) #{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
