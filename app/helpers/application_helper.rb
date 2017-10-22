@@ -122,7 +122,7 @@ module ApplicationHelper
     result_str = ''
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
-    return '' if reports.count.empty? 
+    return 'empty reports count' if reports.count.empty? 
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
     Company.all.each do |brocked_company|
       arr = reports.where(broked_company_id: brocked_company.id)
@@ -151,7 +151,7 @@ module ApplicationHelper
     result_str = ''
     battle = company.battles.last
     sum_score = battle.reports.sum(:score)
-    return 'sum_score 0' if sum_score == 0
+    return 'sum score 0' if sum_score == 0
     total_count_people = battle.reports.count * battle.score / sum_score.to_f
     result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people.to_i}\n"
     company.divisions.each_with_object(result_str) { |division, str| str << division_report(division) }
