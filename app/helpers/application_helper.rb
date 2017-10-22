@@ -122,7 +122,7 @@ module ApplicationHelper
     result_str = ''
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
-    return '' if reports.count.empty? 
+    return 'empty reports count' if reports.count.empty? 
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
     Company.all.each do |brocked_company|
       arr = reports.where(broked_company_id: brocked_company.id)
