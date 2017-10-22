@@ -151,7 +151,7 @@ module ApplicationHelper
     result_str = ''
     battle = company.battles.last
     sum_score = battle.reports.sum(:score)
-    return 'sum_score 0' if sum_score == 0
+    return 'sum score 0' if sum_score == 0
     total_count_people = battle.reports.count * battle.score / sum_score.to_f
     result_str << "Для #{company.title} обработано #{battle.reports.count} /battle. Должно быть #{total_count_people.to_i}\n"
     company.divisions.each_with_object(result_str) { |division, str| str << division_report(division) }
