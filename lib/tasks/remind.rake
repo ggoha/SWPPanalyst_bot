@@ -4,8 +4,10 @@ include ApplicationHelper
 def remind_task
   bot = Telegram.bots[:division]
   Division.where(autopin: true).each do |d|
-    message = bot.send_message chat_id: d.telegram_id, text: d.message
-    bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    begin
+      message = bot.send_message chat_id: d.telegram_id, text: d.message
+      bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    end
   end
 end
 
@@ -13,7 +15,9 @@ def current_situation_task
   bot = Telegram.bots[:division]
   Division.all.each do |d|
     next unless d.telegram_id
-    bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
+    begin
+      bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
+    end
   end
 end
 
@@ -23,7 +27,9 @@ def mvp_task
     next unless d.company
     next unless d.telegram_id
     message = mvp(d.company.battles.last.reports.for_division(d))
-    bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
+    begin
+      bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
+    end
   end
 end
 
@@ -38,15 +44,19 @@ def update_profile_task
   text = 'Ты не обновлял профиль более 3-x дней, нам нужны актуальные данные, пожалуйста, перешли мне свой профиль'
   User.where('last_remind_at < ?', DateTime.now - 3.day).each do |user|
     user.update_attributes(last_remind_at: DateTime.now)
-    bot.send_message chat_id: user.telegram_id, text: text
+    begin
+      bot.send_message chat_id: user.telegram_id, text: text
+    end
   end
 end
 
 def after_day_task
   bot = Telegram.bots[:division]
   Division.where(autopin_nighty: true).each do |d|
-    message = bot.send_message chat_id: d.telegram_id, text: d.nighty_message
-    bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    begin
+      message = bot.send_message chat_id: d.telegram_id, text: d.nighty_message
+      bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    end
   end
 end
 
