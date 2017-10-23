@@ -47,18 +47,18 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
   end
 
-  def achivments(*)
+  def achievements(*)
     return unless @user
     respond_with :message, text: achivments_report(@user, true)
   end
 
-  def autopin(value)
-    @division.update_attributes(autopin: value)
+  def autopin(*value)
+    @division.update_attributes(autopin: value[0])
     respond_with :message, text: "Для #{@division.title} автопин #{value}"
   end
 
-  def autopin_nighty(value)
-    @division.update_attributes(autopin_nighty: value)
+  def autopin_nighty(*value)
+    @division.update_attributes(autopin_nighty: value[0])
     respond_with :message, text: "Для #{@division.title} вечерний автопин #{value}"
   end
 
@@ -72,7 +72,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     respond_with :message, text: "Для #{@division.title} установлено сообщение вечернего автопина #{args.join(' ')}"
   end
 
-  def divisions
+  def divisions(*)
     respond_with :message, text: 'Выбери отдел', reply_markup: {
       inline_keyboard: [@admin.moderated_divisions.map { |d| { text: d.title, callback_data: d.id.to_s } }]
     }
@@ -89,18 +89,24 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     end
   end
 
-  def move_out(id)
-    user = User.find(id)
-    return unless @admin.moderated_divisions.include? user.division
-    respond_with :message, text: "#{user.game_name} выгнан из #{user.division.title}"
-    user.move
+  def move_out(*ids)
+    ids.each do |id|
+      user = User.find(id)
+      next unless user
+      next unless @admin.moderated_divisions.include? user.division
+      respond_with :message, text: "#{user.game_name} выгнан из #{user.division.title}"
+      user.move
+    end
   end
 
-  def move(id)
-    user = User.find(id)
-    return unless @admin.moderated_divisions.include? user.division
-    user.move(session[:division])
-    respond_with :message, text: "#{user.game_name} переведен в #{user.division.title}"
+  def move(*ids)
+    ids.each do |id|
+      user = User.find(id)
+      next unless user
+      next unless @admin.moderated_divisions.include? user.division
+      user.move(session[:division])
+      respond_with :message, text: "#{user.game_name} переведен в #{user.division.title}"
+    end
   end
 
   def update_admin(*)

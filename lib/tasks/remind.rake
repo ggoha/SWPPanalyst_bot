@@ -12,6 +12,7 @@ end
 def current_situation_task
   bot = Telegram.bots[:division]
   Division.all.each do |d|
+    next unless d.telegram_id
     bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
   end
 end
@@ -20,6 +21,7 @@ def mvp_task
   bot = Telegram.bots[:division]
   Division.all.each do |d|
     next unless d.company
+    next unless d.telegram_id
     message = mvp(d.company.battles.last.reports.for_division(d))
     bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
   end

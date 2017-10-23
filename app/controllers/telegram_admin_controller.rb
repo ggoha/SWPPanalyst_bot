@@ -12,7 +12,7 @@ class TelegramAdminController < Telegram::Bot::UpdatesController
     respond_with :message, text: t('.content')
   end
 
-  def summary
+  def summary(*)
     if from_admin_chat?(update['message'])
       respond_with :message, text: company_summary_report(Company.our), parse_mode: 'Markdown'
     else
