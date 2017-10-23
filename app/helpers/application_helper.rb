@@ -3,7 +3,7 @@ module ApplicationHelper
   KILL = { 0 => '0⃣️ ', 1 => '1⃣️ ', 2 => '2⃣️ ', 3 => '3⃣️ ', 4 => '4⃣️' }.freeze
 
   def idv(user)
-    user.id.to_s.ljust(3, '#')
+    "🆔#{user.id}".ljust(4, '#')
   end
 
   def level(user)
@@ -15,7 +15,7 @@ module ApplicationHelper
   end
 
   def last_update(user)
-    user.profile_update_at ? user.profile_update_at.strftime("%H-%d") : '##-##'
+    '⏱' + (user.profile_update_at ? user.profile_update_at.strftime('%H-%d') : '##-##')
   end
 
   def endurance(user)
@@ -23,7 +23,7 @@ module ApplicationHelper
       "🔋#{user.endurance}"
     else
       "🚫#{user.endurance}"
-    end.ljust(4, '-')
+    end.ljust(4, '#')
   end
 
   def game_name(user)
@@ -54,7 +54,7 @@ module ApplicationHelper
     if achivment.public?
       if user.achivments.include? achivment
         str = "#{achivment.icon}#{achivment.title} "
-        str << "- #{achivment.description}" if achivment.show?
+        str << "- #{achivment.description} " if achivment.show?
         str << "#{achivment.percentage.round(2)}%\n"
       else
         "❔\n"
@@ -84,7 +84,7 @@ module ApplicationHelper
   end
 
   def user_compact_report(user)
-    "#{idv(user)} #{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)}" \
+    "#{idv(user)} #{level(user)} #{stars(user)} 😡#{user.rage} 😔#{user.company.sadness} #{endurance(user)} " \
       "#{last_update(user)} #{SMILE[user.company_id]}#{user_link(user)}\n"
   end
 
@@ -122,7 +122,7 @@ module ApplicationHelper
     result_str = ''
     battle = division.company.battles.last
     reports = battle.reports.for_division(division)
-    return 'empty reports count' if reports.count.empty? 
+    return '' if reports.empty? && !detailed_view
     result_str << "Для #{division.title} обработано #{reports.count} /battle\n"
     Company.all.each do |brocked_company|
       arr = reports.where(broked_company_id: brocked_company.id)
