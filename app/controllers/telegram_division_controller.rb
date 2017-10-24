@@ -9,8 +9,6 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
   before_action :find_division, only: [:autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
 
-  before_action :check_achivment, only: [:message]
-
   context_to_action!
 
   def start(*)
@@ -22,11 +20,15 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def message(message)
-    type = message_type(message)
-    return if type == :parse_undefined
-    private_message, public_message = parse(message, type)
-    bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
-    respond_with :message, text: public_message if public_message
+    begin
+      type = message_type(message)
+      private_message, public_message = parse(message, type)
+      return if type == :parse_undefined
+      bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
+      respond_with :message, text: public_message if public_message
+    rescue StandartError => e
+      logger.error e
+    end
   end
 
   def summary(*)
@@ -122,10 +124,6 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   private
 
-  def check_achivment
-    @user.check_achivment(update['message']) if @user
-  end
-
   def set_division
     @division = Division.find_by_telegram_id(update['message']['chat']['id'])
     throw :abort unless @division
@@ -139,7 +137,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def set_user
     @user = User.find_by_telegram_id(update['message']['from']['id'])
-    logger.error("#{update['message']['from']['username']}") unless @user
+    logger.error(update['message']['from']['username'].to_s) unless @user
   end
 
   def set_admin

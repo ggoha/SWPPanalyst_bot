@@ -55,11 +55,15 @@ module SwParsed
     battle_name2 = yesterdays_battle_date(message)
     battle_id = (user.company.battles.find_by_name(battle_name) || user.company.battles.find_by_name(battle_name2)).id
     # battle = user.company.battles.last
-    # if message['text'].scan(/на (\d+) часов/)[0][0] != (battle.at + 3.hours).hour
+    # if message['forward_date'] > battle.at + 3.hours
     #   return ['Репорт не обработан битва не найдена', 'Репорт не обработан битва не найдена']
     # end
     if text.scan(/(Ты защищал|Ты взламывал) (.+)/).empty?
       return ['Репорт не обработан, необходимо добавить компанию, которую ты вламывал', 'Репорт не обработан, необходимо добавить компанию, которую ты вламывал']
+    end
+    md5 = Digest::MD5.hexdigest(text)
+    if Report.find_by_md5 md5
+      return ['Такой репорт уже обработан', 'Такой репорт уже обработан']
     end
     broked_company_id = NAME_SMILE[text.scan(/(Ты защищал|Ты взламывал) (.+)/)[0][1]]
     kill = kill(message)
@@ -67,6 +71,8 @@ module SwParsed
     score = score(message)
     endurance = endurances(message)
     buff = buff(message, user)
+
+    user.check_achivment(message)
     report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
     user.update_endurance(endurance)
     result_str << report.inspect
@@ -92,6 +98,8 @@ module SwParsed
     params[:experience] = to_int(message['text'].scan(/Опыт: (.+) из/)[0][0])
     params[:motivation] = motivations(message)
     endurance = message['text'].scan(/Выносливость: (\d+)%/)[0] ? message['text'].scan(/Выносливость: (\d+)%/)[0][0] : 0
+    
+    user.check_achivment(message)
     user.update_profile(params)
     user.update_endurance(endurance)
     result_str << user.inspect
@@ -117,6 +125,8 @@ module SwParsed
     params[:experience] = to_int(message['text'].scan(/\((.+) из/)[0][0])
     params[:motivation] = motivations(message)
     endurance = message['text'].scan(/🔋(\d+)%/)[0] ? message['text'].scan(/🔋(\d+)%/)[0][0] : 0
+    
+    user.check_achivment(message)
     user.update_profile(params)
     user.update_endurance(endurance)
     result_str << user.inspect

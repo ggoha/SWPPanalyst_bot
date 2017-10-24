@@ -26,7 +26,8 @@ module Parsed
   end
 
   def parse_undefined(message)
-    message['text']
+    @user.check_achivment(message) if @user
+    ['', '']
   end
 
   def parse_totals(message)
