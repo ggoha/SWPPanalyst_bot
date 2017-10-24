@@ -93,4 +93,15 @@ namespace :group do
   task after_day: :environment do
     after_day_task
   end
+
+  desc 'Результат боя с монстром'
+  task halloween: :environment do
+    Telegram.bots[:division].send_message chat_id: Division.first.telegram_id, text: current_situation_with_monster
+  end
+
+  desc 'Результат боя с монстром'
+  task regenerate: :environment do
+    Monster.take.regenerate
+    Telegram.bots[:division].send_message chat_id: Division.first.telegram_id, text: current_situation_with_monster
+  end
 end

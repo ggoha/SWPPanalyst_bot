@@ -30,7 +30,7 @@ gem 'telegram-bot', github: 'telegram-bot-rb/telegram-bot'
 gem 'after_party'
 gem 'rollbar'
 gem 'whenever', require: false
-gem 'gruff'
+#gem 'gruff'
 
 gem "eventmachine"
 gem 'telegram-rb', github: 'ssut/telegram-rb', require: 'telegram'

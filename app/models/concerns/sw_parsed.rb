@@ -1,3 +1,4 @@
+require 'digest/md5'
 module SwParsed 
   extend ActiveSupport::Concern
   COUNT = { 'никого' => 0, 'одного' => 1, 'двух' => 2, 'трёх' => 3, 'четырёх' => 4 }.freeze
@@ -73,8 +74,9 @@ module SwParsed
     buff = buff(message, user)
 
     user.check_achivment(message)
-    report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff)
+    report =  user.reports.create(battle_id: battle_id, broked_company_id: broked_company_id, kill: kill, money: money, score: score, buff: buff, md5: md5)
     user.update_endurance(endurance)
+    Monstr.take.interaction(user, broked_company_id, damage)
     result_str << report.inspect
     [result_str, 'Репорт обработан']
   end

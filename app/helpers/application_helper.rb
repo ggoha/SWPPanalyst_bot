@@ -174,4 +174,12 @@ module ApplicationHelper
   def current_situation(companies)
     'Текущая грусть: ' + companies.map { |i| "#{i.title} 😔#{i.sadness}" }.join(', ')
   end
+
+  def current_situation_with_monster
+    "На данный момент у призрака осталось\n" \
+    "у первой головы - #{Monster.take.hp2}\n" \
+    "у второй головы - #{Monster.take.hp3}\n" \
+    "у третьей головы - #{Monster.take.hp4}\n" \
+    "у четвертой головы - #{Monster.take.hp5}\n"
+  end
 end
