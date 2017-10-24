@@ -10,3 +10,9 @@ end
 every '0 12 * * *' do
   rake 'group:update_profile'
 end
+every '1 * * * *' do
+  rake 'group:halloween'
+end
+every '1 1 * * *' do
+  rake 'group:regenerate'
+end
