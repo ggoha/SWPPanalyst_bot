@@ -7,6 +7,8 @@ def remind_task
     begin
       message = bot.send_message chat_id: d.telegram_id, text: d.message
       bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    rescue StandartError => e
+      logger.error e
     end
   end
 end
@@ -17,6 +19,8 @@ def current_situation_task
     next unless d.telegram_id
     begin
       bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
+    rescue StandartError => e
+      logger.error e
     end
   end
 end
@@ -29,6 +33,8 @@ def mvp_task
     message = mvp(d.company.battles.last.reports.for_division(d))
     begin
       bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
+    rescue StandartError => e
+      logger.error e
     end
   end
 end
@@ -46,6 +52,8 @@ def update_profile_task
     user.update_attributes(last_remind_at: DateTime.now)
     begin
       bot.send_message chat_id: user.telegram_id, text: text
+    rescue StandartError => e
+      logger.error e
     end
   end
 end
@@ -56,6 +64,8 @@ def after_day_task
     begin
       message = bot.send_message chat_id: d.telegram_id, text: d.nighty_message
       bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
+    rescue StandartError => e
+      logger.error e
     end
   end
 end
