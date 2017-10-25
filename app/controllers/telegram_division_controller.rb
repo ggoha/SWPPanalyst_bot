@@ -26,7 +26,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
       return if type == :parse_undefined
       bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
       respond_with :message, text: public_message if public_message
-    rescue StandartError => e
+    rescue StandardError => e
       logger.error e
     end
   end
