@@ -122,6 +122,10 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     end
   end
 
+  def walk
+    respond_with :message, text: Journey.event if User.id == 2
+  end
+
   private
 
   def set_division
