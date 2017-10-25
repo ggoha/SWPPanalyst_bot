@@ -122,8 +122,8 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     end
   end
 
-  def walk
-    respond_with :message, text: Journey.event if User.id == 2
+  def walk(*)
+    respond_with :message, text: Journey.start(@user) if @user.id == 2
   end
 
   private

@@ -7,7 +7,7 @@ def remind_task
     begin
       message = bot.send_message chat_id: d.telegram_id, text: d.message
       bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
-      sleep(100)
+      sleep(1)
     rescue StandardError => e
       logger.error e
     end
@@ -20,7 +20,7 @@ def current_situation_task
     next unless d.telegram_id
     begin
       bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
-      sleep(100)
+      sleep(1)
     rescue StandardError => e
       logger.error e
     end
@@ -35,7 +35,7 @@ def mvp_task
     message = mvp(d.company.battles.last.reports.for_division(d))
     begin
       bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
-      sleep(100)
+      sleep(1)
     rescue StandardError => e
       logger.error e
     end
@@ -54,7 +54,7 @@ def update_profile_task
   User.where('last_remind_at < ?', DateTime.now - 3.day).each do |user|
     user.update_attributes(last_remind_at: DateTime.now)
     begin
-      sleep(1000)
+      sleep(10)
       bot.send_message chat_id: user.telegram_id, text: text
     rescue StandardError => e
       logger.error e
@@ -71,6 +71,17 @@ def after_day_task
     rescue StandardError => e
       logger.error e
     end
+  end
+end
+
+def walk_task
+  bot = Telegram.bots[:division]
+  User.where(halloween_status: 'walk').each do |user|
+    begin
+      Journey.event(user)
+    rescue StandardError => e
+      logger.error e
+    end    
   end
 end
 

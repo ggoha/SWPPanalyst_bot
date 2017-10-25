@@ -24,13 +24,13 @@ class Monster < ApplicationRecord
     [2..5].select{ |id| hp(id).positive? }.sample
   end
 
-  def damage(user, id, damage)
+  def damage(id, damage)
     id = get_head(id)
     update_attribute('hp' + id.to_s, [hp(id) - damage, 0].max)
     "Ты нанес #{damage} урона #{NUMBERS_dative[id]} голове призрака"
   end
 
-  def heal(user, id, heal)
+  def heal(id, heal)
     id = get_head(id)
     update_attribute('hp' + id.to_s, hp(id) + heal)
     "Ты отхилил на #{heal} #{NUMBERS_accusative[id]} голову призрака"
