@@ -9,7 +9,7 @@ def remind_task
       bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
       sleep(1)
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end
   end
 end
@@ -22,7 +22,7 @@ def current_situation_task
       bot.send_message chat_id: d.telegram_id, text: current_situation(Company.all)
       sleep(1)
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end
   end
 end
@@ -37,7 +37,7 @@ def mvp_task
       bot.send_message chat_id: d.telegram_id, text: message if message && !message.empty?
       sleep(1)
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end
   end
 end
@@ -57,7 +57,7 @@ def update_profile_task
       sleep(10)
       bot.send_message chat_id: user.telegram_id, text: text
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end
   end
 end
@@ -69,7 +69,7 @@ def after_day_task
       message = bot.send_message chat_id: d.telegram_id, text: d.nighty_message
       bot.pin_chat_message(chat_id: d.telegram_id, message_id: message['result']['message_id'])
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end
   end
 end
@@ -78,9 +78,9 @@ def walk_task
   bot = Telegram.bots[:division]
   User.where(halloween_status: 'walk').each do |user|
     begin
-      Journey.event(user)
+      bot.send_message chat_id: user.telegram_id, text: Journey.event(user)
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e
     end    
   end
 end
@@ -109,14 +109,28 @@ namespace :group do
     after_day_task
   end
 
+  task walk: :environment do
+    walk_task
+  end
+
   desc 'Результат боя с монстром'
   task halloween: :environment do
-    Telegram.bots[:division].send_message chat_id: Division.first.telegram_id, text: current_situation_with_monster
+    ids = [1,3,6,7,9]
+    m = current_situation_with_monster
+    bot  = Telegram.bots[:division]
+    Division.find(ids).each do |d|
+        bot.send_message chat_id: d.telegram_id, text: m
+    end
   end
 
   desc 'Результат боя с монстром'
   task regenerate: :environment do
     Monster.take.regenerate
-    Telegram.bots[:division].send_message chat_id: Division.first.telegram_id, text: current_situation_with_monster
+    ids = [1,3,6,7,9]
+    m = current_situation_with_monster
+    bot  = Telegram.bots[:division]
+    Division.find(ids).each do |d|
+    	bot.send_message chat_id: d.telegram_id, text: m
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171006203306) do
+ActiveRecord::Schema.define(version: 20171025201751) do
 
   create_table "achivments", force: :cascade do |t|
     t.string  "title"
@@ -54,6 +54,14 @@ ActiveRecord::Schema.define(version: 20171006203306) do
     t.string  "nighty_message", default: "Проверьте автосон, ловите биржевиков, приходите завтра на взлом"
   end
 
+  create_table "monsters", force: :cascade do |t|
+    t.string  "title"
+    t.integer "hp2"
+    t.integer "hp3"
+    t.integer "hp4"
+    t.integer "hp5"
+  end
+
   create_table "reports", force: :cascade do |t|
     t.integer "user_id"
     t.integer "broked_company_id"
@@ -63,6 +71,7 @@ ActiveRecord::Schema.define(version: 20171006203306) do
     t.integer "score"
     t.boolean "active"
     t.float   "buff"
+    t.string  "md5"
   end
 
   create_table "stocks", force: :cascade do |t|
@@ -100,7 +109,10 @@ ActiveRecord::Schema.define(version: 20171006203306) do
     t.integer  "mvp",                 default: 0
     t.datetime "profile_update_at"
     t.datetime "endurance_update_at"
-    t.datetime "last_remind_at",      default: '2017-10-08 15:57:02'
+    t.datetime "last_remind_at",      default: '2017-10-05 19:39:25'
+    t.integer  "motivation"
+    t.string   "halloween_status",    default: "inactive"
+    t.datetime "star_journey_at"
   end
 
 end

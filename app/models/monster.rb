@@ -9,7 +9,7 @@ class Monster < ApplicationRecord
 
   def interaction(user, head_id, score)
     message = user.company == Company.our ? damage(head_id, score) : heal(head_id, score)
-    Telegram.bots[:division].send_message chat_id: user.telegram_id, text: message if [1, 2, 13].include?(user.id)
+    Telegram.bots[:division].send_message chat_id: user.telegram_id, text: message
   end
 
   private
@@ -21,7 +21,7 @@ class Monster < ApplicationRecord
 
   def get_head(id)
     return id if hp(id).positive?
-    [2..5].select{ |id| hp(id).positive? }.sample
+    [2,3,4,5].select{ |id| hp(id).positive? }.sample
   end
 
   def damage(id, damage)

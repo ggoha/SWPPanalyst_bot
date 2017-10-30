@@ -5,7 +5,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Parsed
 
   before_action :set_division, only: [:summary]
-  before_action :set_user, only: [:me, :give, :message, :achievements]
+  before_action :set_user, only: [:me, :give, :message, :achievements, :walk]
   before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
   before_action :find_division, only: [:autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
 
@@ -76,7 +76,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   def divisions(*)
     respond_with :message, text: 'Выбери отдел', reply_markup: {
-      inline_keyboard: [@admin.moderated_divisions.map { |d| { text: d.title, callback_data: d.id.to_s } }]
+      inline_keyboard: @admin.moderated_divisions.map { |d| { text: d.title, callback_data: d.id.to_s } }.each_slice(4).to_a
     }
   end
 
@@ -123,7 +123,11 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   end
 
   def walk(*)
-    respond_with :message, text: Journey.start(@user) if @user.id == 2
+    respond_with :message, text: 'Сейчас в путешествие отправиться нельзя. Жди следующего ивента'
+    #begin
+    #  respond_with :message, text: Journey.start(@user)
+    #rescue
+    #end
   end
 
   private
