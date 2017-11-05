@@ -137,7 +137,8 @@ module ApplicationHelper
       result_str << " #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n"
       result_str << "\n" if detailed_view
     end
-    result_str << mvp(reports, false) if detailed_view
+    mvp = mvp(reports, false) if detailed_view
+    result_str << mvp unless mvp.blank?
     sum_score = reports.sum(:score)
     result_str << "Отряд заработал #{sum_score}🏆 (#{(sum_score.to_f / battle.score * 100).round(2)}%)\n\n"
   end

@@ -1,4 +1,5 @@
 require 'digest/md5'
+require 'set'
 class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
   include ApplicationHelper
@@ -6,7 +7,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
 
   before_action :set_division, only: [:summary]
   before_action :set_user, only: [:me, :give, :message, :achievements, :walk]
-  before_action :set_admin, only: [:users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
+  before_action :set_admin, only: [:user, :users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
   before_action :find_division, only: [:autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
 
   context_to_action!
@@ -27,16 +28,36 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
       bot.send_message chat_id: Rails.application.secrets['telegram']['me'], text: private_message if private_message
       respond_with :message, text: public_message if public_message
     rescue StandardError => e
-      logger.error e
+      Rails.logger.error e.message
+      Rails.logger.error e.backtrace.join("\n")
     end
+  end
+	def current_situation(*)
+	end
+
+  def level(*)
+  end
+
+  def mvp(*)
+  end
+  def mvp_reports(*)
   end
 
   def summary(*)
-    respond_with :message, text: summary_report(@division), parse_mode: 'Markdown'
+    begin
+      binding.pry
+      respond_with :message, text: summary_report(@division), parse_mode: 'Markdown'
+    rescue StandardError => e
+      Rails.logger.error e
+    end
   end
 
   def hashtags(*)
-    respond_with :message, text: t('.content')
+    begin
+      respond_with :message, text: t('.content')
+    rescue StandardError => e
+      Rails.logger.error e
+    end
   end
 
   def give(*value)
@@ -44,9 +65,28 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest(@user.game_name) == value[0]
   end
 
+  def halloween(*)
+    @@users << @user.id
+  end
+
   def me(*)
+    begin
     return unless @user
     respond_with :message, text: user_report(@user), parse_mode: 'Markdown'
+    rescue StandardError => e
+      Rails.logger.error e
+    end
+  end
+
+  def user(*id)
+    begin
+      user = User.find id[0]
+      return unless user
+      return unless @admin.moderated_divisions.include? user.division
+      respond_with :message, text: user_report(user), parse_mode: 'Markdown'
+    rescue StandardError => e
+      Rails.logger.error e
+    end    
   end
 
   def achievements(*)
