@@ -74,6 +74,25 @@ module ApplicationHelper
     end << "\n"
   end
 
+  def user_battle_report(user, battle)
+    result = ''
+    report = battle.reports.where(user_id: user.id).first
+    return '#{battle.at.hour} - ' unless report
+    result << "#{battle.at.hour} - #{report.score}🏆 #{report.money}💵 #{SMILE[report.broked_company_id]}"
+  end
+
+  def history_report(user)
+    result = "Результаты битв\n"
+    result << "Вчера:\n"
+    user.company.battles.yesterday.each do |battle|
+      result << user_battle_report(user, battle)
+    end << "\n"
+    result << "Сегодня:\n"
+    user.company.battles.day.each do |battle|
+      result << user_battle_report(user, battle)
+    end
+  end
+
   def users_report(divisions)
     divisions.each_with_object([]) do |division, result|
       result_str = "*#{division.title}*\n"

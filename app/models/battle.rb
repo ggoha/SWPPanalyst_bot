@@ -10,6 +10,7 @@ class Battle < ApplicationRecord
   scope :penultima, -> { where(company_id: Company.our).last(2)[0] }
 
   scope :week, -> { where(at: (Time.now - 1.week)..Time.now) }
+  scope :yesterday, -> {where(at: (Time.now.midnight - 1.day)..Time.now.midnight) }
   scope :day, -> { where(at: (Time.now - 1.day)..Time.now) }
   default_scope { order(:at) }
   

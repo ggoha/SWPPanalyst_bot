@@ -6,7 +6,7 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
   include Parsed
 
   before_action :set_division, only: [:summary]
-  before_action :set_user, only: [:me, :give, :message, :achievements, :walk]
+  before_action :set_user, only: [:me, :give, :message, :achievements, :walk, :history]
   before_action :set_admin, only: [:user, :users, :divisions, :autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
   before_action :find_division, only: [:autopin, :pin_message, :autopin_nighty, :pin_message_nighty, :move_out, :move, :update_admin]
 
@@ -65,8 +65,13 @@ class TelegramDivisionController < Telegram::Bot::UpdatesController
     @user.add_achivment(Achivment.first) if Digest::MD5.hexdigest(@user.game_name) == value[0]
   end
 
-  def halloween(*)
-    @@users << @user.id
+  def history(*)
+    begin
+    return unless @user
+    respond_with :message, text: history_report(@user), parse_mode: 'Markdown'
+    rescue StandardError => e
+      Rails.logger.error e
+    end    
   end
 
   def me(*)

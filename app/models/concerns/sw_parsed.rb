@@ -90,7 +90,7 @@ module SwParsed
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
-    params[:game_name] = message['text'].scan(/\n\n💰?(.*) \(/)[0][0]
+    params[:game_name] = message['text'].scan(/\n\n[^а-яА-ЯёЁ\w -_\[\]]*([а-яА-ЯёЁ\w -_\[\]]*) \(/)[0][0]
     params[:practice] = message['text'].scan(/Практика:.+\((\d+)\)/)[0][0]
     params[:theory] = message['text'].scan(/Теория:.+\((\d+)\)/)[0][0]
     params[:cunning] = message['text'].scan(/Хитрость:.+\((\d+)\)/)[0][0]
@@ -117,7 +117,7 @@ module SwParsed
       return ['Уже обработан более поздний профиль', 'Уже обработан более поздний профиль']
     end
     params = {}
-    params[:game_name] = message['text'].scan(/\n\n💰?(.*) \(/)[0][0]
+    params[:game_name] = message['text'].scan(/\n\n[^а-яА-ЯёЁ\w -_\[\]]*([а-яА-ЯёЁ\w -_\[\]]*) \(/)[0][0]
     params[:practice] = to_int(message['text'].scan(/🔨(.+)🎓/)[0][0])
     params[:theory] = to_int(message['text'].scan(/🎓(.+)/)[0][0])
     params[:cunning] = to_int(message['text'].scan(/🐿(.+)🐢/)[0][0])
@@ -149,7 +149,7 @@ module SwParsed
   private
 
   def practice_buff(practice, user)
-    (practice.to_f / user.practice - 1) * 100 / (0.6 * (1 + user.rage * 0.2))
+    (practice.to_f / user.practice - 1) * 100 / ( 1.2 * (1 + user.rage * 0.2))
   end
 
   def theory_buff(theory, user)
